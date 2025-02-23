@@ -1,0 +1,8 @@
+C:\Users\tatanadanilova\source\repos\PhotoMaximuuum\PhotoMaximuuum\obj\Debug\PhotoMaximuuum.csproj.AssemblyReference.cache
+C:\Users\tatanadanilova\source\repos\PhotoMaximuuum\PhotoMaximuuum\obj\Debug\MainWindow.baml
+C:\Users\tatanadanilova\source\repos\PhotoMaximuuum\PhotoMaximuuum\obj\Debug\AuthPage.g.cs
+C:\Users\tatanadanilova\source\repos\PhotoMaximuuum\PhotoMaximuuum\obj\Debug\MainWindow.g.cs
+C:\Users\tatanadanilova\source\repos\PhotoMaximuuum\PhotoMaximuuum\obj\Debug\App.g.cs
+C:\Users\tatanadanilova\source\repos\PhotoMaximuuum\PhotoMaximuuum\obj\Debug\GeneratedInternalTypeHelper.g.cs
+C:\Users\tatanadanilova\source\repos\PhotoMaximuuum\PhotoMaximuuum\obj\Debug\PhotoMaximuuum_MarkupCompile.cache
+C:\Users\tatanadanilova\source\repos\PhotoMaximuuum\PhotoMaximuuum\obj\Debug\PhotoMaximuuum_MarkupCompile.lref
