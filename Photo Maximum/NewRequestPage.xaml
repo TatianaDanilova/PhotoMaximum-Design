@@ -1,0 +1,132 @@
+﻿<Page x:Class="Photo_Maximum.NewRequestPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Title="Новый заказ" Width="850" Height="500" Background="#BDC3C7">
+    <Page.Resources>
+        <!-- Стиль для карточек -->
+        <Style x:Key="OrderCardStyle" TargetType="Border">
+            <Setter Property="Background" Value="#BDC3C7"/>
+            <Setter Property="BorderBrush" Value="#34495E"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="5"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect BlurRadius="10" ShadowDepth="2" Color="#888"/>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#F0F0F0"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Стиль для кнопок -->
+        <Style x:Key="PrimaryButtonStyle" TargetType="Button">
+            <Setter Property="Foreground" Value="#34495E"/>
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#34495E"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Border"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="5"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="#34495E"/>
+                                <Setter Property="Foreground" Value="#BDC3C7"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="#2C3E50"/>
+                                <Setter Property="Foreground" Value="#BDC3C7"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Page.Resources>
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- Заголовок и кнопка "Назад" -->
+            <RowDefinition Height="*"/>
+            <!-- Прокручиваемая область -->
+            <RowDefinition Height="Auto"/>
+            <!-- Кнопка "Создать заказ" и стоимость -->
+        </Grid.RowDefinitions>
+
+        <!-- Заголовок и кнопка "Назад" -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Stretch">
+            <Button Content="Назад" Style="{StaticResource PrimaryButtonStyle}" Click="BackButton_Click" HorizontalAlignment="Left"/>
+            <TextBlock Text="Новый заказ" FontSize="32" FontWeight="Bold" Foreground="#34495E" HorizontalAlignment="Center" Margin="10,0"/>
+        </StackPanel>
+
+        <!-- Прокручиваемая область -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,10">
+            <StackPanel>
+                <!-- Выбор типа предмета -->
+                <TextBlock Text="Тип предмета:" FontSize="18" Foreground="#34495E" Margin="0,10"/>
+                <WrapPanel x:Name="ItemTypePanel" Margin="0,5">
+                    <!-- Карточки для выбора типа -->
+                    <Border x:Name="MugCard" Style="{StaticResource OrderCardStyle}" Margin="5" MouseLeftButtonDown="ItemTypeCard_Click">
+                        <StackPanel>
+                            <TextBlock Text="Кружка" FontSize="18" FontWeight="Bold" Foreground="#34495E"/>
+                            <TextBlock Text="От 500 руб." FontSize="14" Foreground="#777"/>
+                        </StackPanel>
+                    </Border>
+                    <Border x:Name="TShirtCard" Style="{StaticResource OrderCardStyle}" Margin="5" MouseLeftButtonDown="ItemTypeCard_Click">
+                        <StackPanel>
+                            <TextBlock Text="Футболка" FontSize="18" FontWeight="Bold" Foreground="#34495E"/>
+                            <TextBlock Text="От 1000 руб." FontSize="14" Foreground="#777"/>
+                        </StackPanel>
+                    </Border>
+                    <Border x:Name="PillowCard" Style="{StaticResource OrderCardStyle}" Margin="5" MouseLeftButtonDown="ItemTypeCard_Click">
+                        <StackPanel>
+                            <TextBlock Text="Подушка" FontSize="18" FontWeight="Bold" Foreground="#34495E"/>
+                            <TextBlock Text="От 1500 руб." FontSize="14" Foreground="#777"/>
+                        </StackPanel>
+                    </Border>
+                </WrapPanel>
+
+                <!-- Выбор размера -->
+                <TextBlock Text="Размер:" FontSize="18" Foreground="#34495E" Margin="0,10"/>
+                <WrapPanel x:Name="ItemSizePanel" Margin="0,5"/>
+
+                <!-- Загрузка фотографии -->
+                <TextBlock Text="Фотография:" FontSize="18" Foreground="#34495E" Margin="0,10"/>
+                <StackPanel Orientation="Horizontal" Margin="0,5">
+                    <Button x:Name="UploadPhotoButton" Content="Загрузить фото" Style="{StaticResource PrimaryButtonStyle}" Click="UploadPhotoButton_Click"/>
+                    <Image x:Name="UploadedPhoto" Width="100" Height="100" Margin="10,0" Stretch="Uniform"/>
+                </StackPanel>
+
+                <!-- Поле для комментария -->
+                <TextBlock Text="Комментарий:" FontSize="18" Foreground="#34495E" Margin="0,10"/>
+                <TextBox x:Name="CommentTextBox" FontSize="16" Margin="0,5" Height="100" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Кнопка "Создать заказ" и стоимость -->
+        <Grid Grid.Row="2" Margin="0,20">
+            <TextBlock x:Name="CostTextBlock" Text="Стоимость: 0 руб." FontSize="18" Foreground="#34495E" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            <Button x:Name="CreateOrderButton" Content="Создать заказ" Style="{StaticResource PrimaryButtonStyle}" HorizontalAlignment="Right" Click="CreateOrderButton_Click"/>
+        </Grid>
+    </Grid>
+</Page>

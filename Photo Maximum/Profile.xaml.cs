@@ -1,30 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace Photo_Maximum
 {
-    /// <summary>
-    /// Логика взаимодействия для Profile.xaml
-    /// </summary>
-    public partial class Profile : Window
+    public partial class Profile : Page
     {
-        string connectionString = "Server=95.31.128.97;Database=PhotoMaximum;User Id=admin;Password=winServer=;";
+        private readonly DatabaseService _databaseService;
+
         public Profile()
         {
+            string connectionString = "Server=95.31.128.97;Database=PhotoMaximum;User Id=admin;Password=winServer=;";
             InitializeComponent();
+            _databaseService = new DatabaseService("Server=95.31.128.97;Database=PhotoMaximum;User Id=admin;Password=winServer=;");
+            LoadUserData();
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 try
@@ -78,32 +68,86 @@ namespace Photo_Maximum
                 ToMasters.Visibility = Visibility.Visible;
             }
 
+        
+    }
+
+        private void LoadUserData()
+        {
+            try
+            {
+                // Получаем данные пользователя
+                var userData = _databaseService.GetUserData(CurrentUser.userId);
+
+                // Заполняем поля на странице
+                NameBox.Text = userData.Fio;
+                PhoneBox.Text = userData.Phone;
+                RegLoginBox.Text = userData.Login;
+                RegPasswordBox.Text = userData.Password;
+
+                // Устанавливаем роль
+                if (userData.Role != "Клиент")
+                {
+                    RoleBox.Text = userData.Role;
+                }
+                else
+                {
+                    RoleBlock.Visibility = Visibility.Collapsed;
+                    RoleBox.Visibility = Visibility.Collapsed;
+                }
+
+                // Показываем кнопку для оператора
+                if (userData.Role == "Оператор")
+                {
+                    ToMasters.Visibility = Visibility.Visible;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка при загрузке данных: " + ex.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void ToRequests_Click(object sender, RoutedEventArgs e)
         {
-            Client client = new Client();
-            client.Show();
-            this.Close();
+            if (CurrentUser.role == "Клиент")
+            {
+                NavigationService.Navigate(new Client());
+            }
+            else
+            {
+                MessageBox.Show("Доступ запрещен. Эта страница доступна только для клиентов.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
         }
+
         private void EditProfileClick(object sender, RoutedEventArgs e)
         {
-            EditProfile editProfile = new EditProfile();
-            editProfile.Show();
-            this.Close();
+            // Проверяем, что CurrentUser не пустой
+            if (string.IsNullOrEmpty(CurrentUser.fio) || string.IsNullOrEmpty(CurrentUser.phone) ||
+                string.IsNullOrEmpty(CurrentUser.login) || string.IsNullOrEmpty(CurrentUser.pass))
+            {
+                MessageBox.Show("Данные пользователя не загружены&&&&&&&&&&&.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            // Переходим на страницу редактирования профиля
+            NavigationService.Navigate(new EditProfile());
         }
+
         private void ToMasters_Click(object sender, RoutedEventArgs e)
         {
+            // Переход на страницу мастеров (если нужно)
         }
+
         private void ToAutho_Click(object sender, RoutedEventArgs e)
         {
-            MainWindow mainWindow = new MainWindow();
-            mainWindow.Show();
-            this.Close();
+            // Возврат на страницу авторизации
+            NavigationService.Navigate(new AuthPage());
         }
+
         private void Exit_Click(object sender, RoutedEventArgs e)
         {
-            System.Windows.Application.Current.Shutdown();
+            // Закрытие приложения
+            Application.Current.Shutdown();
         }
     }
 }

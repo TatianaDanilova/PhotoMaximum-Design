@@ -1,48 +1,72 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace Photo_Maximum
 {
-    /// <summary>
-    /// Логика взаимодействия для Client.xaml
-    /// </summary>
-    public partial class Client : Window
+    public partial class Client : Page
     {
+        private readonly DatabaseService _databaseService;
+
         public Client()
         {
             InitializeComponent();
+
+            // Проверяем роль пользователя
+            if (CurrentUser.role != "Клиент")
+            {
+                MessageBox.Show("Доступ запрещен. Эта страница доступна только для клиентов.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                NavigationService.Navigate(new Profile()); // Перенаправляем на профиль или другую страницу
+                return;
+            }
+
+            _databaseService = new DatabaseService("Server=95.31.128.97;Database=PhotoMaximum;User Id=admin;Password=winServer=;");
+            LoadClientRequests();
+        }
+
+        private void LoadClientRequests()
+        {
+            try
+            {
+                var requests = _databaseService.GetClientRequests(CurrentUser.userId);
+                ClientRequestsList.ItemsSource = requests;
+
+                // Проверяем, есть ли заказы
+                if (requests == null || requests.Count == 0)
+                {
+                    NoOrdersText.Visibility = Visibility.Visible; // Показываем сообщение
+                }
+                else
+                {
+                    NoOrdersText.Visibility = Visibility.Collapsed; // Скрываем сообщение
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка при загрузке заказов: " + ex.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void ToProfile_Click(object sender, RoutedEventArgs e)
         {
-            Profile profile = new Profile();
-            profile.Show();
-            this.Close();
+            NavigationService.Navigate(new Profile());
         }
+
         private void ToAutho_Click(object sender, RoutedEventArgs e)
         {
-            MainWindow mainWindow = new MainWindow();
-            mainWindow.Show();
-            this.Close();
+            NavigationService.Navigate(new AuthPage());
         }
+
         private void Exit_Click(object sender, RoutedEventArgs e)
         {
-            System.Windows.Application.Current.Shutdown();
+            Application.Current.Shutdown();
         }
+
         private void NewRequestClick(object sender, RoutedEventArgs e)
         {
-
+            NavigationService.Navigate(new NewRequestPage());
         }
     }
 }
