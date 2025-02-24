@@ -86,34 +86,40 @@ namespace Photo_Maximum
             {
                 foreach (var size in _itemPrices[_selectedItemType].Keys)
                 {
+                    var stackPanel = new StackPanel
+                    {
+                        Children =
+                {
+                    new TextBlock
+                    {
+                        Text = size,
+                        FontSize = 16,
+                        Foreground = Brushes.Black,
+                        HorizontalAlignment = HorizontalAlignment.Center,
+                        VerticalAlignment = VerticalAlignment.Center
+                    }
+                }
+                    };
+
+                    // Добавляем информацию о размерах для футболок
+                    if (_selectedItemType == "Футболка")
+                    {
+                        stackPanel.Children.Add(new TextBlock
+                        {
+                            Text = GetSizeInfo(size),
+                            FontSize = 12,
+                            Foreground = Brushes.Gray,
+                            HorizontalAlignment = HorizontalAlignment.Center,
+                            VerticalAlignment = VerticalAlignment.Center,
+                            Margin = new Thickness(0, 5, 0, 0)
+                        });
+                    }
+
                     var sizeCard = new Border
                     {
                         Style = (Style)FindResource("OrderCardStyle"),
                         Margin = new Thickness(5),
-                        Child = new StackPanel
-                        {
-                            Children =
-                            {
-                                new TextBlock
-                                {
-                                    Text = size,
-                                    FontSize = 16,
-                                    Foreground = Brushes.Black,
-                                    HorizontalAlignment = HorizontalAlignment.Center,
-                                    VerticalAlignment = VerticalAlignment.Center
-                                },
-                                // Добавляем информацию о размерах для футболок
-                                _selectedItemType == "Футболка" ? new TextBlock
-                                {
-                                    Text = GetSizeInfo(size),
-                                    FontSize = 12,
-                                    Foreground = Brushes.Gray,
-                                    HorizontalAlignment = HorizontalAlignment.Center,
-                                    VerticalAlignment = VerticalAlignment.Center,
-                                    Margin = new Thickness(0, 5, 0, 0)
-                                } : null
-                            }
-                        }
+                        Child = stackPanel
                     };
 
                     sizeCard.MouseLeftButtonDown += SizeCard_Click;
@@ -202,7 +208,7 @@ namespace Photo_Maximum
                 databaseService.CreateRequest(CurrentUser.userId, _selectedItemType, _selectedItemSize, savePath, CommentTextBox.Text, _itemPrices[_selectedItemType][_selectedItemSize]);
 
                 MessageBox.Show("Заказ успешно создан!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
-                NavigationService.GoBack(); // Возвращаемся на предыдущую страницу
+                NavigationService.Navigate(new Client()); // Возвращаемся на предыдущую страницу
             }
             catch (Exception ex)
             {
