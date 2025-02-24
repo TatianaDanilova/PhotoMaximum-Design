@@ -33,7 +33,7 @@ namespace Photo_Maximum
         // Обработчик кнопки "Назад"
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            NavigationService.GoBack(); // Возвращаемся на предыдущую страницу
+            NavigationService.Navigate(new Client());
         }
 
         // Обработчик выбора типа предмета
@@ -90,21 +90,31 @@ namespace Photo_Maximum
                     {
                         Style = (Style)FindResource("OrderCardStyle"),
                         Margin = new Thickness(5),
-                        Child = new TextBlock
+                        Child = new StackPanel
                         {
-                            Text = size,
-                            FontSize = 16,
-                            Foreground = Brushes.Black,
-                            HorizontalAlignment = HorizontalAlignment.Center,
-                            VerticalAlignment = VerticalAlignment.Center
+                            Children =
+                            {
+                                new TextBlock
+                                {
+                                    Text = size,
+                                    FontSize = 16,
+                                    Foreground = Brushes.Black,
+                                    HorizontalAlignment = HorizontalAlignment.Center,
+                                    VerticalAlignment = VerticalAlignment.Center
+                                },
+                                // Добавляем информацию о размерах для футболок
+                                _selectedItemType == "Футболка" ? new TextBlock
+                                {
+                                    Text = GetSizeInfo(size),
+                                    FontSize = 12,
+                                    Foreground = Brushes.Gray,
+                                    HorizontalAlignment = HorizontalAlignment.Center,
+                                    VerticalAlignment = VerticalAlignment.Center,
+                                    Margin = new Thickness(0, 5, 0, 0)
+                                } : null
+                            }
                         }
                     };
-
-                    // Добавляем всплывающую подсказку для размеров футболок
-                    if (_selectedItemType == "Футболка")
-                    {
-                        sizeCard.ToolTip = GetTShirtSizeToolTip(size);
-                    }
 
                     sizeCard.MouseLeftButtonDown += SizeCard_Click;
                     ItemSizePanel.Children.Add(sizeCard);
@@ -112,17 +122,17 @@ namespace Photo_Maximum
             }
         }
 
-        // Получение подсказки для размеров футболок
-        private string GetTShirtSizeToolTip(string size)
+        // Получение информации о размерах для футболок
+        private string GetSizeInfo(string size)
         {
             switch (size)
             {
-                case "XS": return "Размер XS: Обхват груди - 81-86 см, Длина - 66 см";
-                case "S": return "Размер S: Обхват груди - 86-91 см, Длина - 68 см";
-                case "M": return "Размер M: Обхват груди - 91-96 см, Длина - 70 см";
-                case "L": return "Размер L: Обхват груди - 96-101 см, Длина - 72 см";
-                case "XL": return "Размер XL: Обхват груди - 101-106 см, Длина - 74 см";
-                default: return string.Empty;
+                case "XS": return "Обхват груди: 81-86 см\nДлина: 66 см";
+                case "S": return "Обхват груди: 86-91 см\nДлина: 68 см";
+                case "M": return "Обхват груди: 91-96 см\nДлина: 70 см";
+                case "L": return "Обхват груди: 96-101 см\nДлина: 72 см";
+                case "XL": return "Обхват груди: 101-106 см\nДлина: 74 см";
+                default: return "";
             }
         }
 
@@ -146,7 +156,7 @@ namespace Photo_Maximum
                 border.Background = Brushes.AliceBlue;
 
                 // Получаем выбранный размер
-                _selectedItemSize = (border.Child as TextBlock)?.Text;
+                _selectedItemSize = (border.Child as StackPanel)?.Children[0] is TextBlock textBlock ? textBlock.Text : null;
 
                 // Обновляем стоимость
                 UpdateCost();

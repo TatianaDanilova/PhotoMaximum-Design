@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Windows.Controls;
+using System.Windows.Media.Imaging;
 
 namespace Photo_Maximum
 {
@@ -276,6 +278,59 @@ namespace Photo_Maximum
                 return result != null ? Convert.ToInt32(result) : -1;
             }
         }
+        public List<Order> GetRequestsInfo(int userId)
+        {
+            var orders = new List<Order>();
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                var query = @"
+            SELECT 
+                r.request_id AS RequestId,
+                r.status AS Status,
+                t.type_name AS Type,
+                r.size AS Size,
+                r.photo AS Photo,
+                r.comment AS Comment,
+                r.date_start AS StartDate,
+                r.date_end AS EndDate,
+                u_master.fio AS Executor, -- ФИО мастера
+                u_client.fio AS Customer -- ФИО клиента
+            FROM Requests r
+            JOIN Types t ON r.type_id = t.type_id
+            JOIN Users u_client ON r.client_id = u_client.user_id
+            LEFT JOIN Users u_master ON r.master_id = u_master.user_id
+            WHERE r.client_id = @UserId";
+
+                using (var command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@UserId", userId);
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            var order = new Order
+                            {
+                                RequestId = reader.GetInt32(0),
+                                Status = reader.GetString(1),
+                                Type = reader.GetString(2),
+                                Size = reader.GetString(3),
+                                Photo = reader.GetString(4),
+                                Comment = reader.IsDBNull(5) ? null : reader.GetString(5),
+                                StartDate = reader.GetDateTime(6),
+                                EndDate = reader.IsDBNull(7) ? (DateTime?)null : reader.GetDateTime(7),
+                                Executor = reader.IsDBNull(8) ? null : reader.GetString(8),
+                                Customer = reader.GetString(9)
+                            };
+                            orders.Add(order);
+                        }
+                    }
+                }
+            }
+
+            return orders;
+        }
     }
 
     // Класс для хранения данных пользователя
@@ -292,6 +347,20 @@ namespace Photo_Maximum
     {
         public int RequestId { get; set; }
         public string Status { get; set; }
+    }
+    public class Order
+    {
+        public int RequestId { get; set; }
+        public string Status { get; set; }
+        public string Type { get; set; }
+        public string Size { get; set; }
+        public string Photo { get; set; }
+        public BitmapImage PhotoSource { get; set; } // BitmapImage для отображения
+        public string Comment { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
+        public string Executor { get; set; }
+        public string Customer { get; set; }
     }
 
 }
