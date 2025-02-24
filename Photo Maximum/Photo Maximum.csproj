@@ -107,8 +107,17 @@
       <DependentUpon>EditProfile.xaml</DependentUpon>
     </Compile>
     <Compile Include="ImgurUploader.cs" />
+    <Compile Include="MastersPages.xaml.cs">
+      <DependentUpon>MastersPages.xaml</DependentUpon>
+    </Compile>
     <Compile Include="NewRequestPage.xaml.cs">
       <DependentUpon>NewRequestPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Operator.xaml.cs">
+      <DependentUpon>Operator.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="OrderDetailsWindow.xaml.cs">
+      <DependentUpon>OrderDetailsWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Profile.xaml.cs">
       <DependentUpon>Profile.xaml</DependentUpon>
@@ -148,7 +157,19 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="MastersPages.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="NewRequestPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Operator.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="OrderDetailsWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

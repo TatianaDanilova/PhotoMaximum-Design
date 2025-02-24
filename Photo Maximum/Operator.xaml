@@ -1,0 +1,115 @@
+﻿<Page x:Class="Photo_Maximum.Operator"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Title="Оператор" Width="850" Height="500" Background="#BDC3C7">
+    <Page.Resources>
+        <!-- Стиль для карточек -->
+        <Style x:Key="OrderCardStyle" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#34495E"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="5"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect BlurRadius="10" ShadowDepth="2" Color="#888"/>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#F0F0F0"/>
+                    <Setter Property="RenderTransform">
+                        <Setter.Value>
+                            <ScaleTransform ScaleX="1.02" ScaleY="1.02"/>
+                        </Setter.Value>
+                    </Setter>
+                    <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Стиль для кнопок -->
+        <Style x:Key="PrimaryButtonStyle" TargetType="Button">
+            <Setter Property="Foreground" Value="#34495E"/>
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#34495E"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Border"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="5"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="#34495E"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Border" Property="Background" Value="#2C3E50"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Page.Resources>
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- Заголовок и кнопка "Назад" -->
+            <RowDefinition Height="*"/>
+            <!-- Список заказов -->
+            <RowDefinition Height="Auto"/>
+            <!-- Кнопка "Обновить список" -->
+        </Grid.RowDefinitions>
+
+        <!-- Заголовок и кнопка "Назад" -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Stretch">
+            <Button Content="Назад" Style="{StaticResource PrimaryButtonStyle}" Click="BackButton_Click" HorizontalAlignment="Left"/>
+            <TextBlock Text="Заказы" FontSize="32" FontWeight="Bold" Foreground="#34495E" HorizontalAlignment="Center" Margin="10,0"/>
+        </StackPanel>
+
+        <!-- Список заказов -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,10">
+            <ItemsControl x:Name="OrdersList" ItemsSource="{Binding}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Style="{StaticResource OrderCardStyle}" Margin="0,5" MouseLeftButtonDown="OrderCard_Click">
+                            <StackPanel>
+                                <TextBlock Text="{Binding RequestId, StringFormat='Заказ №{0}'}" FontSize="18" FontWeight="Bold" Foreground="#34495E"/>
+                                <TextBlock Text="{Binding Type, StringFormat='Тип: {0}'}" FontSize="14" Foreground="#555"/>
+                                <TextBlock Text="{Binding Size, StringFormat='Размер: {0}'}" FontSize="14" Foreground="#555"/>
+                                <TextBlock Text="{Binding Status, StringFormat='Статус: {0}'}" FontSize="14" Foreground="#555"/>
+                                <TextBlock Text="{Binding Customer, StringFormat='Клиент: {0}'}" FontSize="14" Foreground="#555"/>
+                                <TextBlock Text="{Binding Executor, StringFormat='Мастер: {0}'}" FontSize="14" Foreground="#555"/>
+                                <StackPanel Orientation="Horizontal" Margin="0,10">
+                                    <ComboBox x:Name="MasterComboBox" DisplayMemberPath="Fio" ItemsSource="{Binding Masters}" SelectedItem="{Binding SelectedMaster, Mode=TwoWay}" Width="150" Margin="5,0"/>
+                                    <Button Content="Назначить мастера" Style="{StaticResource PrimaryButtonStyle}" Margin="5,0" Click="AssignMaster_Click"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <!-- Кнопка "Обновить список" -->
+        <Button Grid.Row="2" Content="Обновить список" Style="{StaticResource PrimaryButtonStyle}" HorizontalAlignment="Right" Margin="0,10" Click="RefreshOrders_Click"/>
+    </Grid>
+</Page>

@@ -113,11 +113,27 @@ namespace Photo_Maximum
             {
                 NavigationService.Navigate(new Client());
             }
+            else if (CurrentUser.role == "Оператор")
+            {
+                NavigationService.Navigate(new Operator());
+            }
             else
             {
-                MessageBox.Show("Доступ запрещен. Эта страница доступна только для клиентов.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Доступ запрещен. Эта страница недоступна.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
+        private void ToMasters_Click(object sender, RoutedEventArgs e)
+        {
+            if (CurrentUser.role == "Оператор")
+            {
+                NavigationService.Navigate(new MastersPage());
+            }
+            else
+            {
+                MessageBox.Show("Доступ запрещен. Эта страница недоступна.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+        
 
         private void EditProfileClick(object sender, RoutedEventArgs e)
         {
@@ -133,10 +149,7 @@ namespace Photo_Maximum
             NavigationService.Navigate(new EditProfile());
         }
 
-        private void ToMasters_Click(object sender, RoutedEventArgs e)
-        {
-            // Переход на страницу мастеров (если нужно)
-        }
+        
 
         private void ToAutho_Click(object sender, RoutedEventArgs e)
         {

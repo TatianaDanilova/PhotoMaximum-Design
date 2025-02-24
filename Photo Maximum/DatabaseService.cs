@@ -331,11 +331,111 @@ namespace Photo_Maximum
 
             return orders;
         }
+    
+    public List<Order> GetAllOrders()
+    {
+        var orders = new List<Order>();
+
+        using (var connection = new SqlConnection(_connectionString))
+        {
+            connection.Open();
+            var query = @"
+            SELECT 
+                r.request_id AS RequestId,
+                r.status AS Status,
+                t.type_name AS Type,
+                r.size AS Size,
+                r.photo AS Photo,
+                r.comment AS Comment,
+                r.date_start AS StartDate,
+                r.date_end AS EndDate,
+                u_master.fio AS Executor, -- ФИО мастера
+                u_client.fio AS Customer -- ФИО клиента
+            FROM Requests r
+            JOIN Types t ON r.type_id = t.type_id
+            JOIN Users u_client ON r.client_id = u_client.user_id
+            LEFT JOIN Users u_master ON r.master_id = u_master.user_id";
+
+            using (var command = new SqlCommand(query, connection))
+            {
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var order = new Order
+                        {
+                            RequestId = reader.GetInt32(0),
+                            Status = reader.GetString(1),
+                            Type = reader.GetString(2),
+                            Size = reader.GetString(3),
+                            Photo = reader.GetString(4),
+                            Comment = reader.IsDBNull(5) ? null : reader.GetString(5),
+                            StartDate = reader.GetDateTime(6),
+                            EndDate = reader.IsDBNull(7) ? (DateTime?)null : reader.GetDateTime(7),
+                            Executor = reader.IsDBNull(8) ? null : reader.GetString(8),
+                            Customer = reader.GetString(9)
+                        };
+                        orders.Add(order);
+                    }
+                }
+            }
+        }
+
+        return orders;
     }
 
+    public List<UserData> GetMasters()
+    {
+        var masters = new List<UserData>();
+
+        using (var connection = new SqlConnection(_connectionString))
+        {
+            connection.Open();
+            var query = "SELECT user_id, fio, phone, login, pass FROM Users WHERE role_id = 2";
+
+            using (var command = new SqlCommand(query, connection))
+            {
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var master = new UserData
+                        {
+                            UserId = reader.GetInt32(0),
+                            Fio = reader.GetString(1),
+                            Phone = reader.GetString(2),
+                            Login = reader.GetString(3),
+                            Password = reader.GetString(4)
+                        };
+                        masters.Add(master);
+                    }
+                }
+            }
+        }
+
+        return masters;
+    }
+
+    public void AssignMaster(int requestId, int masterId)
+    {
+        using (var connection = new SqlConnection(_connectionString))
+        {
+            connection.Open();
+            var query = "UPDATE Requests SET master_id = @MasterId WHERE request_id = @RequestId";
+
+            using (var command = new SqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@MasterId", masterId);
+                command.Parameters.AddWithValue("@RequestId", requestId);
+                command.ExecuteNonQuery();
+            }
+        }
+    }
+}
     // Класс для хранения данных пользователя
     public class UserData
     {
+        public int UserId { get; set; }
         public string Fio { get; set; }
         public string Phone { get; set; }
         public string Login { get; set; }
@@ -361,6 +461,8 @@ namespace Photo_Maximum
         public DateTime? EndDate { get; set; }
         public string Executor { get; set; }
         public string Customer { get; set; }
+        public List<UserData> Masters { get; set; }
+        public UserData SelectedMaster { get; set; }
     }
 
 }
