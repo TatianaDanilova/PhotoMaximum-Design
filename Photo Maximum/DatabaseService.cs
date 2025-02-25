@@ -220,7 +220,6 @@ namespace Photo_Maximum
             return requests;
         }
         // Метод для создания заказа
-        // Метод для создания заказа
         public void CreateRequest(int clientId, string itemType, string itemSize, string photoPath, string comment, int price)
         {
             using (var connection = new SqlConnection(_connectionString))
@@ -421,9 +420,13 @@ namespace Photo_Maximum
         using (var connection = new SqlConnection(_connectionString))
         {
             connection.Open();
-            var query = "UPDATE Requests SET master_id = @MasterId WHERE request_id = @RequestId";
+                var query = @"
+            UPDATE Requests 
+            SET master_id = @MasterId, 
+                status = 'Ждет подтверждения' 
+            WHERE request_id = @RequestId";
 
-            using (var command = new SqlCommand(query, connection))
+                using (var command = new SqlCommand(query, connection))
             {
                 command.Parameters.AddWithValue("@MasterId", masterId);
                 command.Parameters.AddWithValue("@RequestId", requestId);

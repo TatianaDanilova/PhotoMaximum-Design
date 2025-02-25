@@ -104,6 +104,7 @@ namespace Photo_Maximum
                 // Обновляем список заказов
                 LoadData();
                 MessageBox.Show("Мастер успешно назначен.", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+
             }
             catch (Exception ex)
             {
