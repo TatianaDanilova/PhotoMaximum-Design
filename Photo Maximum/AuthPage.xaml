@@ -6,9 +6,8 @@
         <!-- Стили из вашего исходного кода -->
         <Style TargetType="Label" x:Key="Heading">
             <Setter Property="Foreground" Value="#2C3E50"/>
-            <Setter Property="FontSize" Value="36"/>
+            <Setter Property="FontSize" Value="30"/>
             <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="Margin" Value="0,20,0,10"/>
         </Style>
         <Style TargetType="TextBlock">
             <Setter Property="FontFamily" Value="Segoe UI"/>

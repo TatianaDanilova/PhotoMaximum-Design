@@ -97,10 +97,56 @@
                                 <TextBlock Text="{Binding Size, StringFormat='Размер: {0}'}" FontSize="14" Foreground="#555"/>
                                 <TextBlock Text="{Binding Status, StringFormat='Статус: {0}'}" FontSize="14" Foreground="#555"/>
                                 <TextBlock Text="{Binding Customer, StringFormat='Клиент: {0}'}" FontSize="14" Foreground="#555"/>
-                                <TextBlock Text="{Binding Executor, StringFormat='Мастер: {0}'}" FontSize="14" Foreground="#555"/>
                                 <StackPanel Orientation="Horizontal" Margin="0,10">
-                                    <ComboBox x:Name="MasterComboBox" DisplayMemberPath="Fio" ItemsSource="{Binding Masters}" SelectedItem="{Binding SelectedMaster, Mode=TwoWay}" Width="150" Margin="5,0"/>
-                                    <Button Content="Назначить мастера" Style="{StaticResource PrimaryButtonStyle}" Margin="5,0" Click="AssignMaster_Click"/>
+                                    <!-- TextBlock для отображения назначенного мастера -->
+                                    <TextBlock x:Name="AssignedMasterText" 
+               Text="{Binding Executor, StringFormat='Мастер: {0}'}" 
+              FontSize="14" Foreground="#555">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsMasterAssigned}" Value="True">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+
+                                    <!-- ComboBox для выбора мастера -->
+                                    <ComboBox x:Name="MasterComboBox" 
+              DisplayMemberPath="Fio" 
+              ItemsSource="{Binding Masters}" 
+              SelectedItem="{Binding SelectedMaster, Mode=TwoWay}" 
+              Width="150" Margin="5,0">
+                                        <ComboBox.Style>
+                                            <Style TargetType="ComboBox">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsMasterAssigned}" Value="True">
+                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </ComboBox.Style>
+                                    </ComboBox>
+
+                                    <!-- Кнопка "Назначить мастера" -->
+                                    <Button Content="Назначить мастера" 
+            Margin="5,0" 
+            Click="AssignMaster_Click">
+                                        <Button.Style>
+                                            <Style TargetType="Button" BasedOn="{StaticResource PrimaryButtonStyle}">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsMasterAssigned}" Value="True">
+                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
                                 </StackPanel>
                             </StackPanel>
                         </Border>
@@ -108,8 +154,5 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </ScrollViewer>
-
-        <!-- Кнопка "Обновить список" -->
-        <Button Grid.Row="2" Content="Обновить список" Style="{StaticResource PrimaryButtonStyle}" HorizontalAlignment="Right" Margin="0,10" Click="RefreshOrders_Click"/>
-    </Grid>
+</Grid>
 </Page>

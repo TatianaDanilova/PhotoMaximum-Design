@@ -463,6 +463,7 @@ namespace Photo_Maximum
         public string Customer { get; set; }
         public List<UserData> Masters { get; set; }
         public UserData SelectedMaster { get; set; }
+        public bool IsMasterAssigned => !string.IsNullOrEmpty(Executor);
     }
 
 }

@@ -63,11 +63,6 @@ namespace Photo_Maximum
             NavigationService.Navigate(new Profile());
         }
 
-        // Обработчик кнопки "Обновить список"
-        private void RefreshOrders_Click(object sender, RoutedEventArgs e)
-        {
-            LoadData();
-        }
 
         // Обработчик нажатия на карточку заказа
         private void OrderCard_Click(object sender, MouseButtonEventArgs e)
@@ -114,35 +109,6 @@ namespace Photo_Maximum
             {
                 MessageBox.Show("Ошибка при назначении мастера: " + ex.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-        }
-
-        // Вспомогательный метод для поиска родительского элемента
-        private T FindVisualParent<T>(DependencyObject child) where T : DependencyObject
-        {
-            var parentObject = VisualTreeHelper.GetParent(child);
-            if (parentObject == null) return null;
-
-            var parent = parentObject as T;
-            return parent ?? FindVisualParent<T>(parentObject);
-        }
-
-        // Вспомогательный метод для поиска дочернего элемента
-        private T FindVisualChild<T>(DependencyObject parent) where T : DependencyObject
-        {
-            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
-            {
-                var child = VisualTreeHelper.GetChild(parent, i);
-                if (child is T result)
-                {
-                    return result;
-                }
-                else
-                {
-                    var childResult = FindVisualChild<T>(child);
-                    if (childResult != null) return childResult;
-                }
-            }
-            return null;
         }
     }
 }

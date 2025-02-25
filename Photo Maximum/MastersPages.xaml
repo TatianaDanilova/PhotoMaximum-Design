@@ -1,7 +1,7 @@
 ﻿<Page x:Class="Photo_Maximum.MastersPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      Title="Управление мастерами" Width="800" Height="600" Background="#BDC3C7">
+      Title="Управление мастерами" Height="500" Width="850" Background="#BDC3C7">
     <Page.Resources>
         <Style TargetType="Label" x:Key="Heading">
             <Setter Property="Foreground" Value="#2C3E50"/>
@@ -84,51 +84,51 @@
             <TextBlock Text="Управление мастерами" FontSize="32" FontWeight="Bold" Foreground="#34495E" HorizontalAlignment="Center" Margin="10,0"/>
         </StackPanel>
 
-        <!-- Список мастеров -->
-        <DataGrid x:Name="MastersGrid" 
-                  Grid.Row="1" 
-                  AutoGenerateColumns="False" 
-                  IsReadOnly="True" 
-                  Margin="0,10">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="ID" Binding="{Binding UserId}" Width="Auto"/>
-                <DataGridTextColumn Header="ФИО" Binding="{Binding Fio}" Width="*"/>
-                <DataGridTextColumn Header="Телефон" Binding="{Binding Phone}" Width="Auto"/>
-                <DataGridTextColumn Header="Логин" Binding="{Binding Login}" Width="Auto"/>
-            </DataGrid.Columns>
-        </DataGrid>
 
-        <!-- Форма добавления мастера -->
-        <Border Grid.Row="2" Background="White" Padding="10" CornerRadius="5" Margin="0,10">
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Список мастеров -->
+            <DataGrid x:Name="MastersGrid" 
+          Grid.Row="1" 
+          AutoGenerateColumns="False" 
+          IsReadOnly="True" 
+          Margin="0, 0, 10 0">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="ID" Binding="{Binding UserId}" Width="Auto"/>
+                    <DataGridTextColumn Header="ФИО" Binding="{Binding Fio}" Width="*"/>
+                    <DataGridTextColumn Header="Телефон" Binding="{Binding Phone}" Width="Auto"/>
+                    <DataGridTextColumn Header="Логин" Binding="{Binding Login}" Width="Auto"/>
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <!-- Форма добавления мастера -->
+        <Border Grid.Row="2" Grid.Column="1" Background="White" Padding="10" CornerRadius="5" Margin="0,10">
             <StackPanel>
                 <TextBlock Text="Добавить нового мастера" FontSize="18" FontWeight="Bold" Foreground="#34495E" Margin="0,0,0,10"/>
 
                 <!-- Поле ФИО -->
-                <Grid>
-                    <TextBox x:Name="NameBox" Margin="0,5" GotFocus="TextBox_GotFocus" LostFocus="TextBox_LostFocus" TextChanged="TextBox_TextChanged"/>
-                    <TextBlock x:Name="NamePlaceholder" Text="ФИО мастера" Foreground="Gray" Margin="5,5,0,0" IsHitTestVisible="False"/>
-                </Grid>
+                <TextBlock Text="ФИО"/>
+                <TextBox x:Name="NameBox" TextChanged="NameBox_TextChanged"/>
 
                 <!-- Поле Телефон -->
-                <Grid>
-                    <TextBox x:Name="PhoneBox" Margin="0,5" GotFocus="TextBox_GotFocus" LostFocus="TextBox_LostFocus" TextChanged="TextBox_TextChanged" PreviewTextInput="PhoneBox_PreviewTextInput"/>
-                    <TextBlock x:Name="PhonePlaceholder" Text="Телефон" Foreground="Gray" Margin="5,5,0,0" IsHitTestVisible="False"/>
-                </Grid>
+                <TextBlock Text="Телефон"/>
+                <TextBox x:Name="PhoneBox" PreviewTextInput="PhoneBox_PreviewTextInput" TextChanged="PhoneBox_TextChanged"/>
 
                 <!-- Поле Логин -->
-                <Grid>
-                    <TextBox x:Name="LoginBox" Margin="0,5" GotFocus="TextBox_GotFocus" LostFocus="TextBox_LostFocus" TextChanged="TextBox_TextChanged"/>
-                    <TextBlock x:Name="LoginPlaceholder" Text="Логин" Foreground="Gray" Margin="5,5,0,0" IsHitTestVisible="False"/>
-                </Grid>
+                <TextBlock Text="Логин"/>
+                <TextBox x:Name="RegLoginBox" TextChanged="RegLoginBox_TextChanged"/>
 
                 <!-- Поле Пароль -->
-                <Grid>
-                    <PasswordBox x:Name="PasswordBox" Margin="0,5" GotFocus="PasswordBox_GotFocus" LostFocus="PasswordBox_LostFocus" PasswordChanged="PasswordBox_PasswordChanged"/>
-                    <TextBlock x:Name="PasswordPlaceholder" Text="Пароль" Foreground="Gray" Margin="5,5,0,0" IsHitTestVisible="False"/>
-                </Grid>
+                <TextBlock Text="Пароль"/>
+                <PasswordBox x:Name="RegPasswordBox" PasswordChanged="RegPasswordBox_PasswordChanged"/>
 
                 <Button Content="Добавить мастера" Style="{StaticResource PrimaryButtonStyle}" Margin="0,10" Click="AddMaster_Click"/>
             </StackPanel>
         </Border>
+        </Grid>
     </Grid>
 </Page>

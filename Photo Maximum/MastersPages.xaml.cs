@@ -1,14 +1,19 @@
 ﻿using System;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace Photo_Maximum
 {
     public partial class MastersPage : Page
     {
         private readonly DatabaseService _databaseService;
+        private bool isPhoneValid = false;
+        private bool isLoginValid = false;
+        private bool isPasswordValid = false;
 
         public MastersPage()
         {
@@ -30,96 +35,104 @@ namespace Photo_Maximum
             }
         }
 
-        // Обработчик для TextBox: GotFocus
-        private void TextBox_GotFocus(object sender, RoutedEventArgs e)
+        private void NameBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (sender is TextBox textBox)
+            int spaceCount = NameBox.Text.Count(c => c == ' ');
+            NameBox.BorderBrush = spaceCount < 2 ? Brushes.Red : Brushes.Green;
+            NameBox.ToolTip = spaceCount < 2 ? "Введите Имя, Фамилию и Отчество через пробел" : null;
+        }
+
+        private void PhoneBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            e.Handled = !Regex.IsMatch(e.Text, "^[0-9]+$");
+        }
+
+        private void PhoneBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (PhoneBox.Text.Length == 0)
             {
-                // Скрываем TextBlock с подсказкой
-                var placeholder = FindPlaceholderTextBlock(textBox);
-                if (placeholder != null)
-                {
-                    placeholder.Visibility = Visibility.Collapsed;
-                }
+                PhoneBox.Text = "+7";
+                PhoneBox.CaretIndex = PhoneBox.Text.Length;
+            }
+            else if (!PhoneBox.Text.StartsWith("+7"))
+            {
+                PhoneBox.Text = "+7";
+                PhoneBox.CaretIndex = PhoneBox.Text.Length;
+            }
+
+            if (PhoneBox.Text.Length > 12)
+            {
+                PhoneBox.Text = PhoneBox.Text.Substring(0, 12);
+                PhoneBox.CaretIndex = PhoneBox.Text.Length;
+            }
+
+            isPhoneValid = PhoneBox.Text.Length == 12;
+            PhoneBox.BorderBrush = isPhoneValid ? Brushes.Green : Brushes.Red;
+        }
+
+        private void RegLoginBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            try
+            {
+                isLoginValid = _databaseService.IsLoginUnique(RegLoginBox.Text);
+                RegLoginBox.BorderBrush = isLoginValid ? Brushes.Green : Brushes.Red;
+                RegLoginBox.ToolTip = isLoginValid ? null : $"Логин {RegLoginBox.Text} уже используется другим пользователем";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
-        // Обработчик для TextBox: LostFocus
-        private void TextBox_LostFocus(object sender, RoutedEventArgs e)
+        private void RegPasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
         {
-            if (sender is TextBox textBox)
-            {
-                // Показываем TextBlock с подсказкой, если TextBox пуст
-                var placeholder = FindPlaceholderTextBlock(textBox);
-                if (placeholder != null && string.IsNullOrEmpty(textBox.Text))
-                {
-                    placeholder.Visibility = Visibility.Visible;
-                }
-            }
+            isPasswordValid = Regex.IsMatch(RegPasswordBox.Password, @"^(?=.*[A-Za-z])(?=.*\d).+$");
+            RegPasswordBox.BorderBrush = isPasswordValid ? Brushes.Green : Brushes.Red;
+            RegPasswordBox.ToolTip = isPasswordValid ? null : "Используйте латинские символы и цифры";
         }
 
-        // Обработчик для TextBox: TextChanged
-        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            if (sender is TextBox textBox)
-            {
-                // Управляем видимостью TextBlock с подсказкой
-                var placeholder = FindPlaceholderTextBlock(textBox);
-                if (placeholder != null)
-                {
-                    placeholder.Visibility = string.IsNullOrEmpty(textBox.Text) ? Visibility.Visible : Visibility.Collapsed;
-                }
-            }
-        }
-
-        // Обработчик для PasswordBox: GotFocus
-        private void PasswordBox_GotFocus(object sender, RoutedEventArgs e)
-        {
-            if (sender is PasswordBox passwordBox)
-            {
-                // Скрываем TextBlock с подсказкой
-                PasswordPlaceholder.Visibility = Visibility.Collapsed;
-            }
-        }
-
-        // Обработчик для PasswordBox: LostFocus
-        private void PasswordBox_LostFocus(object sender, RoutedEventArgs e)
-        {
-            if (sender is PasswordBox passwordBox)
-            {
-                // Показываем TextBlock с подсказкой, если PasswordBox пуст
-                if (string.IsNullOrEmpty(passwordBox.Password))
-                {
-                    PasswordPlaceholder.Visibility = Visibility.Visible;
-                }
-            }
-        }
-
-        // Обработчик для PasswordBox: PasswordChanged
-        private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
-        {
-            if (sender is PasswordBox passwordBox)
-            {
-                // Управляем видимостью TextBlock с подсказкой
-                PasswordPlaceholder.Visibility = string.IsNullOrEmpty(passwordBox.Password) ? Visibility.Visible : Visibility.Collapsed;
-            }
-        }
-
-        // Поиск TextBlock с подсказкой для TextBox
-        private TextBlock FindPlaceholderTextBlock(TextBox textBox)
-        {
-            var parent = textBox.Parent as FrameworkElement;
-            if (parent != null)
-            {
-                return parent.FindName(textBox.Name + "Placeholder") as TextBlock;
-            }
-            return null;
-        }
 
         // Обработчик для кнопки "Добавить мастера"
         private void AddMaster_Click(object sender, RoutedEventArgs e)
         {
-            // Ваш код для добавления мастера
+            if (string.IsNullOrWhiteSpace(NameBox.Text) || string.IsNullOrWhiteSpace(PhoneBox.Text) ||
+                string.IsNullOrWhiteSpace(RegLoginBox.Text) || string.IsNullOrWhiteSpace(RegPasswordBox.Password))
+            {
+                MessageBox.Show("Необходимо заполнить все поля", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (!isPhoneValid || !isLoginValid || !isPasswordValid)
+            {
+                MessageBox.Show("Проверьте правильность заполнения полей", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            try
+            {
+                int rowsAffected = _databaseService.RegisterUser(NameBox.Text, PhoneBox.Text, RegLoginBox.Text, RegPasswordBox.Password, 2);
+                if (rowsAffected > 0)
+                {
+                    MessageBox.Show("Пользователь успешно зарегистрирован!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                    NameBox.Text = "";
+                    NameBox.BorderBrush = Brushes.Gray;
+                    PhoneBox.Text = "";
+                    PhoneBox.BorderBrush = Brushes.Gray;
+                    RegLoginBox.Text = "";
+                    RegLoginBox.BorderBrush = Brushes.Gray;
+                    RegPasswordBox.Password = "";
+                    RegPasswordBox.BorderBrush = Brushes.Gray;
+                }
+                else
+                {
+                    MessageBox.Show("Ошибка регистрации. Попробуйте снова.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            LoadMasters();
         }
 
         // Обработчик для кнопки "Назад"
@@ -128,10 +141,5 @@ namespace Photo_Maximum
             NavigationService.GoBack();
         }
 
-        // Обработчик для валидации телефона
-        private void PhoneBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
-        {
-            e.Handled = !Regex.IsMatch(e.Text, "^[0-9]+$");
-        }
     }
 }
