@@ -30,7 +30,7 @@ date_end datetime null)
 CREATE TABLE Notifications (
     notification_id INT IDENTITY(1,1) PRIMARY KEY, -- Уникальный ID уведомления
     request_id INT NOT NULL,                      -- ID заказа
-    master_id INT NOT NULL,                       -- ID мастера (если применимо)
+    master_id INT NULL,                       -- ID мастера (если применимо)
     recipient_id INT NOT NULL,                    -- ID получателя уведомления
     message NVARCHAR(500) NOT NULL,               -- Текст уведомления
     is_read BIT NOT NULL DEFAULT 0,               -- Флаг прочтения (0 - не прочитано, 1 - прочитано)

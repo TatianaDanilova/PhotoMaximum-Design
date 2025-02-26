@@ -552,6 +552,61 @@ namespace Photo_Maximum
                 }
             }
         }
+        public List<Notification> GetNotificationsForUser(int userId)
+        {
+            var notifications = new List<Notification>();
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                var query = @"
+            SELECT n.notification_id, n.request_id, n.message, n.is_read, n.created_at
+            FROM Notifications n
+            WHERE n.recipient_id = @UserId
+            ORDER BY n.created_at DESC";
+
+                using (var command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@UserId", userId);
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            var notification = new Notification
+                            {
+                                NotificationId = reader.GetInt32(0),
+                                RequestId = reader.GetInt32(1),
+                                Message = reader.GetString(2),
+                                IsRead = reader.GetBoolean(3),
+                                CreatedAt = reader.GetDateTime(4)
+                            };
+                            notifications.Add(notification);
+                        }
+                    }
+                }
+            }
+
+            return notifications;
+        }
+        public void AddNotification(int requestId, int recipientId, string message, int? masterId = null)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                var query = @"
+            INSERT INTO Notifications (request_id, master_id, recipient_id, message)
+            VALUES (@RequestId, @MasterId, @RecipientId, @Message)";
+
+                using (var command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@RequestId", requestId);
+                    command.Parameters.AddWithValue("@MasterId", masterId ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@RecipientId", recipientId);
+                    command.Parameters.AddWithValue("@Message", message);
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
     }
     // Класс для хранения данных пользователя
     public class UserData
@@ -594,6 +649,15 @@ namespace Photo_Maximum
         public string Customer { get; set; }
         public List<UserData> Masters { get; set; }
         public UserData SelectedMaster { get; set; }
+    }
+    public class Notification
+    {
+        public int NotificationId { get; set; }
+        public int RequestId { get; set; }
+        public string MasterName { get; set; }
+        public string Message { get; set; }
+        public bool IsRead { get; set; }
+        public DateTime CreatedAt { get; set; }
     }
 
 }

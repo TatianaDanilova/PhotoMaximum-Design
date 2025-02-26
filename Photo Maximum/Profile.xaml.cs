@@ -166,5 +166,13 @@ namespace Photo_Maximum
             // Закрытие приложения
             Application.Current.Shutdown();
         }
+
+        private void ToNtiications_Click(object sender, RoutedEventArgs e)
+        {
+            if (CurrentUser.role == "Оператор")
+            {
+                NavigationService.Navigate(new OperatorNotificationsPage());
+            }
+        }
     }
 }

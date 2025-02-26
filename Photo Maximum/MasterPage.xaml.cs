@@ -113,7 +113,7 @@ namespace Photo_Maximum
             try
             {
                 // Уведомляем оператора
-             //   _databaseService.NotifyOperator(selectedOrder.RequestId, CurrentUser.userId);
+                _databaseService.AddNotification(selectedOrder.RequestId, 1, $"Мастер {CurrentUser.fio} отклонил заказ");
 
                 // Убираем заказ из списка мастера
                 _databaseService.UpdateOrderStatus(selectedOrder.RequestId, "отклонен");
