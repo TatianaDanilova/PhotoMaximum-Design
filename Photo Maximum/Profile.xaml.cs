@@ -117,6 +117,10 @@ namespace Photo_Maximum
             {
                 NavigationService.Navigate(new Operator());
             }
+            else if (CurrentUser.role == "Мастер")
+            {
+                NavigationService.Navigate(new MasterPage());
+            }
             else
             {
                 MessageBox.Show("Доступ запрещен. Эта страница недоступна.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);

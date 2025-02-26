@@ -239,8 +239,8 @@ namespace Photo_Maximum
 
                 // SQL-запрос для добавления заказа
                 var query = @"
-            INSERT INTO Requests (request_id, type_id, client_id, size, photo, price, comment, status, date_start)
-            VALUES (@RequestId, @TypeId, @ClientId, @Size, @Photo, @Price, @Comment, 'Новый', GETDATE())";
+            INSERT INTO Requests (request_id, type_id, client_id, size, photo, price, comment, status)
+            VALUES (@RequestId, @TypeId, @ClientId, @Size, @Photo, @Price, @Comment, 'Новый')";
 
                 using (var command = new SqlCommand(query, connection))
                 {
@@ -317,8 +317,8 @@ namespace Photo_Maximum
                                 Size = reader.GetString(3),
                                 Photo = reader.GetString(4),
                                 Comment = reader.IsDBNull(5) ? null : reader.GetString(5),
-                                StartDate = reader.GetDateTime(6),
-                                EndDate = reader.IsDBNull(7) ? (DateTime?)null : reader.GetDateTime(7),
+                                DateStart = reader.IsDBNull(6) ? (DateTime?)null : reader.GetDateTime(6),
+                                DateEnd = reader.IsDBNull(7) ? (DateTime?)null : reader.GetDateTime(7),
                                 Executor = reader.IsDBNull(8) ? null : reader.GetString(8),
                                 Customer = reader.GetString(9)
                             };
@@ -369,8 +369,8 @@ namespace Photo_Maximum
                             Size = reader.GetString(3),
                             Photo = reader.GetString(4),
                             Comment = reader.IsDBNull(5) ? null : reader.GetString(5),
-                            StartDate = reader.GetDateTime(6),
-                            EndDate = reader.IsDBNull(7) ? (DateTime?)null : reader.GetDateTime(7),
+                            DateStart = reader.IsDBNull(6) ? (DateTime?)null : reader.GetDateTime(6),
+                            DateEnd = reader.IsDBNull(7) ? (DateTime?)null : reader.GetDateTime(7),
                             Executor = reader.IsDBNull(8) ? null : reader.GetString(8),
                             Customer = reader.GetString(9)
                         };
@@ -434,7 +434,125 @@ namespace Photo_Maximum
             }
         }
     }
-}
+        public void UpdateOrderStatus(int requestId, string status)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                var query = "UPDATE Requests SET status = @Status WHERE request_id = @RequestId";
+
+                using (var command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@Status", status);
+                    command.Parameters.AddWithValue("@RequestId", requestId);
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+        public List<Order> GetOrdersByMaster(int masterId)
+        {
+            var orders = new List<Order>();
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                var query = @"
+            SELECT r.request_id, r.type_id, t.type_name, r.client_id, u1.fio AS client_name, 
+                   r.master_id, u2.fio AS master_name, r.size, r.photo, r.price, r.comment, 
+                   r.status, r.date_start, r.date_end
+            FROM Requests r
+            INNER JOIN Types t ON r.type_id = t.type_id
+            INNER JOIN Users u1 ON r.client_id = u1.user_id
+            LEFT JOIN Users u2 ON r.master_id = u2.user_id
+            WHERE r.master_id = @MasterId AND r.status != 'отклонен'";
+
+                using (var command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@MasterId", masterId);
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            var order = new Order
+                            {
+                                RequestId = reader.GetInt32(0),
+                                TypeId = reader.GetInt32(1),
+                                Type = reader.GetString(2),
+                                ClientId = reader.GetInt32(3),
+                                Customer = reader.GetString(4),
+                                MasterId = reader.IsDBNull(5) ? (int?)null : reader.GetInt32(5),
+                                Executor = reader.IsDBNull(6) ? null : reader.GetString(6),
+                                Size = reader.GetString(7),
+                                Photo = reader.GetString(8),
+                                Price = reader.GetInt32(9),
+                                Comment = reader.IsDBNull(10) ? null : reader.GetString(10),
+                                Status = reader.GetString(11),
+                                DateStart = reader.IsDBNull(12) ? (DateTime?)null : reader.GetDateTime(12),
+                                DateEnd = reader.IsDBNull(13) ? (DateTime?)null : reader.GetDateTime(13)
+                            };
+                            orders.Add(order);
+                        }
+                    }
+                }
+            }
+
+            return orders;
+        }
+        public void RemoveMasterFromOrder(int requestId)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                var query = @"
+            UPDATE Requests 
+            SET master_id = NULL, 
+                status = 'ожидает назначения мастера' 
+            WHERE request_id = @RequestId";
+
+                using (var command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@RequestId", requestId);
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+        public void UpdateOrderStartDate(int requestId, DateTime startDate)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                var query = @"
+            UPDATE Requests 
+            SET date_start = @StartDate 
+            WHERE request_id = @RequestId";
+
+                using (var command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@StartDate", startDate);
+                    command.Parameters.AddWithValue("@RequestId", requestId);
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+        public void UpdateOrderEndDate(int requestId, DateTime endDate)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                var query = @"
+            UPDATE Requests 
+            SET date_end = @EndDate 
+            WHERE request_id = @RequestId";
+
+                using (var command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@EndDate", endDate);
+                    command.Parameters.AddWithValue("@RequestId", requestId);
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+    }
     // Класс для хранения данных пользователя
     public class UserData
     {
@@ -454,19 +572,28 @@ namespace Photo_Maximum
     public class Order
     {
         public int RequestId { get; set; }
-        public string Status { get; set; }
-        public string Type { get; set; }
+        public int TypeId { get; set; }
+        public string TypeName { get; set; } // Название типа заказа
+        public int ClientId { get; set; }
+        public string ClientName { get; set; } // ФИО клиента
+        public int? MasterId { get; set; }
+        public string MasterName { get; set; } // ФИО мастера
         public string Size { get; set; }
         public string Photo { get; set; }
-        public BitmapImage PhotoSource { get; set; } // BitmapImage для отображения
+        public int Price { get; set; }
         public string Comment { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime? EndDate { get; set; }
+        public string Status { get; set; }
+        public DateTime? DateStart { get; set; }
+        public DateTime? DateEnd { get; set; }
+
+        public bool IsMasterAssigned => !string.IsNullOrEmpty(MasterName);
+
+        public string Type { get; set; }
+        public BitmapImage PhotoSource { get; set; } // BitmapImage для отображения
         public string Executor { get; set; }
         public string Customer { get; set; }
         public List<UserData> Masters { get; set; }
         public UserData SelectedMaster { get; set; }
-        public bool IsMasterAssigned => !string.IsNullOrEmpty(Executor);
     }
 
 }

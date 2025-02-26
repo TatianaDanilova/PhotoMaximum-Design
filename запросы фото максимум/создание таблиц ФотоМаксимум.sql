@@ -26,3 +26,16 @@ comment nvarchar(500) null,
 [status] nvarchar(50) not null,
 date_start datetime null,
 date_end datetime null)
+
+CREATE TABLE Notifications (
+    notification_id INT IDENTITY(1,1) PRIMARY KEY, -- ”никальный ID уведомлени€
+    request_id INT NOT NULL,                      -- ID заказа
+    master_id INT NOT NULL,                       -- ID мастера (если применимо)
+    recipient_id INT NOT NULL,                    -- ID получател€ уведомлени€
+    message NVARCHAR(500) NOT NULL,               -- “екст уведомлени€
+    is_read BIT NOT NULL DEFAULT 0,               -- ‘лаг прочтени€ (0 - не прочитано, 1 - прочитано)
+    created_at DATETIME NOT NULL DEFAULT GETDATE(), -- ƒата создани€ уведомлени€
+    FOREIGN KEY (request_id) REFERENCES Requests(request_id),
+    FOREIGN KEY (master_id) REFERENCES Users(user_id),
+    FOREIGN KEY (recipient_id) REFERENCES Users(user_id)
+);
