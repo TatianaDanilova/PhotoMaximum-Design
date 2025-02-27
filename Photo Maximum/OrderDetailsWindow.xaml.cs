@@ -9,5 +9,10 @@ namespace Photo_Maximum
             InitializeComponent();
             DataContext = order; // Привязываем данные заказа
         }
-    }
+        private void Close_click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+      }
+        
 }

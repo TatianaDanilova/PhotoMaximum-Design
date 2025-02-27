@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data.SqlClient;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 
@@ -649,7 +651,13 @@ namespace Photo_Maximum
         public string Customer { get; set; }
         public List<UserData> Masters { get; set; }
         public UserData SelectedMaster { get; set; }
+        // Свойства для управления видимостью кнопок
+        public Visibility ConfirmButtonVisibility => Status == "Ждет подтверждения" ? Visibility.Visible : Visibility.Collapsed;
+        public Visibility RejectButtonVisibility => Status == "Ждет подтверждения" ? Visibility.Visible : Visibility.Collapsed;
+        public Visibility StartButtonVisibility => Status == "подтвержден" ? Visibility.Visible : Visibility.Collapsed;
+        public Visibility CompleteButtonVisibility => Status == "в процессе" ? Visibility.Visible : Visibility.Collapsed;
     }
+    
     public class Notification
     {
         public int NotificationId { get; set; }
