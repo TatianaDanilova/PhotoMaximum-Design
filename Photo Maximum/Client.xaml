@@ -112,13 +112,13 @@
                             </TextBlock>
 
                             <!-- Дата начала -->
-                            <TextBlock Text="{Binding StartDate, StringFormat='Дата начала: {0:dd.MM.yyyy}'}" FontSize="14" Foreground="#555"/>
+                            <TextBlock Text="{Binding DateStart, StringFormat='Дата начала: {0:dd.MM.yyyy HH:mm}'}" FontSize="14" Foreground="#555"/>
 
                             <!-- Дата завершения -->
                             <TextBlock FontSize="14" Foreground="#555">
                         <Run Text="Дата завершения: "/>
-                        <Run Text="{Binding EndDate, StringFormat='{}{0:dd.MM.yyyy}', TargetNullValue='заказ еще не завершен'}"/>
-                            </TextBlock>
+                        <Run Text="{Binding DateEnd, StringFormat='{}{0:dd.MM.yyyy HH:mm}', TargetNullValue='заказ еще не завершен'}"/>
+                            </TextBlock> 
 
                             <!-- Исполнитель -->
                             <TextBlock FontSize="14" Foreground="#555">

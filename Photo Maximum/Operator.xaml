@@ -116,16 +116,18 @@
 
                                     <!-- ComboBox для выбора мастера -->
                                     <ComboBox x:Name="MasterComboBox" 
-              DisplayMemberPath="Fio" 
-              ItemsSource="{Binding Masters}" 
-              SelectedItem="{Binding SelectedMaster, Mode=TwoWay}" 
-              Width="150" Margin="5,0">
+          DisplayMemberPath="Fio" 
+          ItemsSource="{Binding Masters}" 
+          SelectedItem="{Binding SelectedMaster, Mode=TwoWay}" 
+          Width="150" Margin="5,0">
                                         <ComboBox.Style>
                                             <Style TargetType="ComboBox">
                                                 <Setter Property="Visibility" Value="Visible"/>
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding IsMasterAssigned}" Value="True">
                                                         <Setter Property="Visibility" Value="Collapsed"/>
+                                                        <Setter Property="IsEnabled" Value="False"/>
+                                                        <!-- Добавьте для отладки -->
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>

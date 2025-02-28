@@ -643,7 +643,7 @@ namespace Photo_Maximum
         public DateTime? DateStart { get; set; }
         public DateTime? DateEnd { get; set; }
 
-        public bool IsMasterAssigned => !string.IsNullOrEmpty(MasterName);
+        public bool IsMasterAssigned => !string.IsNullOrEmpty(Executor);
 
         public string Type { get; set; }
         public BitmapImage PhotoSource { get; set; } // BitmapImage для отображения

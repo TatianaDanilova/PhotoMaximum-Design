@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
+using static Photo_Maximum.MasterPage;
+using System.Windows.Media.Imaging;
 
 namespace Photo_Maximum
 {
@@ -21,34 +25,56 @@ namespace Photo_Maximum
         // Загрузка данных
         private void LoadData()
         {
+            
             try
             {
                 // Загружаем заказы, назначенные текущему мастеру
                 _orders = _databaseService.GetOrdersByMaster(CurrentUser.userId);
                 OrdersList.ItemsSource = _orders;
+
+                // Преобразуем пути к фото в BitmapImage
+                foreach (var order in _orders)
+                {
+                    if (!string.IsNullOrEmpty(order.Photo))
+                    {
+                        var bitmapImage = new BitmapImage();
+                        bitmapImage.BeginInit();
+                        bitmapImage.CacheOption = BitmapCacheOption.OnLoad; // Загружаем в память
+                        bitmapImage.UriSource = new Uri(order.Photo);
+                        bitmapImage.EndInit();
+                        order.PhotoSource = bitmapImage; // Сохраняем BitmapImage в объекте Order
+                    }
+                }
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Ошибка при загрузке данных: " + ex.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-
+        public ObservableCollection<Order> Orders { get; set; } = new ObservableCollection<Order>();
         // Подтверждение заказа
         private void ConfirmOrder_Click(object sender, RoutedEventArgs e)
         {
-            var button = sender as Button;
-            if (button == null) return;
+            var button = (Button)sender;
+            var order = button.DataContext as Photo_Maximum.Order;
 
-            var order = button.DataContext as Order;
-            if (order == null) return;
+            if (order == null)
+            {
+                Debug.WriteLine("DataContext кнопки: " + (button.DataContext?.ToString() ?? "null"));
+                MessageBox.Show("Ошибка: DataContext кнопки не содержит объект Order.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
 
             try
             {
-                // Обновляем статус заказа
+                // Обновляем статус заказа в базе данных
                 _databaseService.UpdateOrderStatus(order.RequestId, "подтвержден");
 
                 // Обновляем статус в объекте Order
                 order.Status = "подтвержден";
+
+                // Принудительно обновляем интерфейс
+                OrdersList.Items.Refresh();
 
                 MessageBox.Show("Заказ подтвержден.", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
             }
@@ -56,6 +82,7 @@ namespace Photo_Maximum
             {
                 MessageBox.Show("Ошибка при подтверждении заказа: " + ex.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+            LoadData();
         }
 
         // Отказ от заказа
@@ -64,13 +91,13 @@ namespace Photo_Maximum
             var button = sender as Button;
             if (button == null) return;
 
-            var order = button.DataContext as Order;
+            var order = button.DataContext as Photo_Maximum.Order;
             if (order == null) return;
 
             try
             {
                 // Уведомляем оператора
-                _databaseService.AddNotification(order.RequestId, 1, "Мастер отказался от заказа.", CurrentUser.userId);
+                _databaseService.AddNotification(order.RequestId, 1, $"Мастер {CurrentUser.fio} отказался от заказа.", CurrentUser.userId);
 
                 // Убираем мастера из заказа
                 _databaseService.UpdateOrderStatus(order.RequestId, "отклонен");
@@ -84,6 +111,7 @@ namespace Photo_Maximum
             {
                 MessageBox.Show("Ошибка при отказе от заказа: " + ex.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+            LoadData();
         }
 
         // Начало выполнения заказа
@@ -92,7 +120,7 @@ namespace Photo_Maximum
             var button = sender as Button;
             if (button == null) return;
 
-            var order = button.DataContext as Order;
+            var order = button.DataContext as Photo_Maximum.Order;
             if (order == null) return;
 
             try
@@ -112,6 +140,7 @@ namespace Photo_Maximum
             {
                 MessageBox.Show("Ошибка при начале выполнения заказа: " + ex.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+            LoadData();
         }
 
         // Завершение заказа
@@ -120,7 +149,7 @@ namespace Photo_Maximum
             var button = sender as Button;
             if (button == null) return;
 
-            var order = button.DataContext as Order;
+            var order = button.DataContext as Photo_Maximum.Order;
             if (order == null) return;
 
             try
@@ -140,6 +169,7 @@ namespace Photo_Maximum
             {
                 MessageBox.Show("Ошибка при завершении заказа: " + ex.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+            LoadData();
         }
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
