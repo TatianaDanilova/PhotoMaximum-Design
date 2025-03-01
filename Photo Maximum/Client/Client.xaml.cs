@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
@@ -10,6 +12,8 @@ namespace Photo_Maximum
     public partial class Client : Page
     {
         private readonly DatabaseService _databaseService;
+        private List<Order> _allOrders; // Все заказы
+        private ObservableCollection<Order> _filteredOrders; // Отфильтрованные заказы
 
         public Client()
         {
@@ -62,43 +66,68 @@ namespace Photo_Maximum
         {
             try
             {
-                // Получаем заказы из базы данных
-                var orders = _databaseService.GetRequestsInfo(CurrentUser.userId);
+                // Загружаем все заказы
+                _allOrders = _databaseService.GetAllOrders();
+                _allOrders = _allOrders.Where(o => o.ClientId == CurrentUser.userId).ToList();
 
-                // Преобразуем пути к фото в BitmapImage
-                foreach (var order in orders)
-                {
-                    if (!string.IsNullOrEmpty(order.Photo))
-                    {
-                        var bitmapImage = new BitmapImage();
-                        bitmapImage.BeginInit();
-                        bitmapImage.CacheOption = BitmapCacheOption.OnLoad; // Загружаем в память
-                        bitmapImage.UriSource = new Uri(order.Photo);
-                        bitmapImage.EndInit();
-                        order.PhotoSource = bitmapImage; // Сохраняем BitmapImage в объекте Order
-                    }
-                }
-
-                // Привязываем данные к ItemsControl
-                ClientRequestsList.ItemsSource = orders;
-
-                // Проверяем, есть ли заказы
-                if (orders == null || orders.Count == 0)
-                {
-                    NoOrdersText.Visibility = Visibility.Visible; // Показываем сообщение
-                }
-                else
-                {
-                    NoOrdersText.Visibility = Visibility.Collapsed; // Скрываем сообщение
-                }
+                // Применяем фильтр по умолчанию (Актуальные)
+                ApplyFilter("Актуальные");
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Ошибка при загрузке заказов: " + ex.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Ошибка при загрузке данных: " + ex.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
-        private void ToProfile_Click(object sender, RoutedEventArgs e)
+        // Применение фильтра
+        private void ApplyFilter(string filter)
+        {
+            if (_allOrders == null) return;
+
+            List<Order> filtered;
+
+            // Фильтруем заказы в зависимости от выбранного фильтра
+            if (filter == "Актуальные")
+            {
+                filtered = _allOrders.Where(o => o.Status != "Завершен").ToList();
+            }
+            else if (filter == "Завершенные")
+            {
+                filtered = _allOrders.Where(o => o.Status == "Завершен").ToList();
+            }
+            else
+            {
+                // По умолчанию показываем все заказы
+                filtered = _allOrders.ToList();
+            }
+
+            // Обновляем отфильтрованный список
+            _filteredOrders = new ObservableCollection<Order>(filtered);
+            ClientRequestsList.ItemsSource = _filteredOrders;
+        }
+
+        // Обработчик изменения выбора в ComboBox
+        private void FilterComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var comboBox = sender as ComboBox;
+            if (comboBox == null) return;
+
+            var selectedFilter = (comboBox.SelectedItem as ComboBoxItem)?.Content.ToString();
+            if (selectedFilter != null)
+            {
+                ApplyFilter(selectedFilter);
+            }
+        }
+
+
+        // Обработчик кнопки "Назад"
+        private void BackButton_Click(object sender, RoutedEventArgs e)
+        {
+            NavigationService.Navigate(new Profile());
+        }
+    
+
+    private void ToProfile_Click(object sender, RoutedEventArgs e)
         {
             NavigationService.Navigate(new Profile());
         }

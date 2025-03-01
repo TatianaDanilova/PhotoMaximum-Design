@@ -102,43 +102,43 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="DatabaseService.cs" />
-    <Compile Include="EditProfile.xaml.cs">
+    <Compile Include="Database\DatabaseService.cs" />
+    <Compile Include="Everybody\EditProfile.xaml.cs">
       <DependentUpon>EditProfile.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MasterPage.xaml.cs">
+    <Compile Include="Master\MasterPage.xaml.cs">
       <DependentUpon>MasterPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MastersPages.xaml.cs">
+    <Compile Include="Operator\MastersPages.xaml.cs">
       <DependentUpon>MastersPages.xaml</DependentUpon>
     </Compile>
-    <Compile Include="NewRequestPage.xaml.cs">
+    <Compile Include="Client\NewRequestPage.xaml.cs">
       <DependentUpon>NewRequestPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Operator.xaml.cs">
+    <Compile Include="Operator\Operator.xaml.cs">
       <DependentUpon>Operator.xaml</DependentUpon>
     </Compile>
-    <Compile Include="OperatorNotificationsPage.xaml.cs">
-      <DependentUpon>OperatorNotificationsPage.xaml</DependentUpon>
+    <Compile Include="Everybody\NotificationsPage.xaml.cs">
+      <DependentUpon>NotificationsPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="OrderDetailsWindow.xaml.cs">
+    <Compile Include="Operator\OrderDetailsWindow.xaml.cs">
       <DependentUpon>OrderDetailsWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Profile.xaml.cs">
+    <Compile Include="Everybody\Profile.xaml.cs">
       <DependentUpon>Profile.xaml</DependentUpon>
     </Compile>
-    <Compile Include="RegPage.xaml.cs">
+    <Compile Include="Everybody\RegPage.xaml.cs">
       <DependentUpon>RegPage.xaml</DependentUpon>
     </Compile>
-    <Page Include="AuthPage.xaml">
+    <Page Include="Everybody\AuthPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Client.xaml">
+    <Page Include="Client\Client.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="EditProfile.xaml">
+    <Page Include="Everybody\EditProfile.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -150,47 +150,47 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="AuthPage.xaml.cs">
+    <Compile Include="Everybody\AuthPage.xaml.cs">
       <DependentUpon>AuthPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="CurrentRequest.cs" />
-    <Compile Include="CurrentUser.cs" />
-    <Compile Include="Client.xaml.cs">
+    <Compile Include="Database\CurrentRequest.cs" />
+    <Compile Include="Database\CurrentUser.cs" />
+    <Compile Include="Client\Client.xaml.cs">
       <DependentUpon>Client.xaml</DependentUpon>
     </Compile>
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="MasterPage.xaml">
+    <Page Include="Master\MasterPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MastersPages.xaml">
+    <Page Include="Operator\MastersPages.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="NewRequestPage.xaml">
+    <Page Include="Client\NewRequestPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Operator.xaml">
+    <Page Include="Operator\Operator.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="OperatorNotificationsPage.xaml">
+    <Page Include="Everybody\NotificationsPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="OrderDetailsWindow.xaml">
+    <Page Include="Operator\OrderDetailsWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Profile.xaml">
+    <Page Include="Everybody\Profile.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="RegPage.xaml">
+    <Page Include="Everybody\RegPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

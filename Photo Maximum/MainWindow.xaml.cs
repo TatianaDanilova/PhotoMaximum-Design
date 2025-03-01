@@ -10,5 +10,6 @@ namespace Photo_Maximum
             // Устанавливаем стартовую страницу (авторизация)
             MainFrame.Navigate(new AuthPage());
         }
+        
     }
 }

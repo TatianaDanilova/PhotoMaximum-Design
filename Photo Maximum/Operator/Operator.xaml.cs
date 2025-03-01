@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -14,6 +15,8 @@ namespace Photo_Maximum
         private readonly DatabaseService _databaseService;
         private List<Order> _orders;
         private List<UserData> _masters;
+        private List<Order> _allOrders; // Все заказы
+        private ObservableCollection<Order> _filteredOrders; // Отфильтрованные заказы
 
         public Operator()
         {
@@ -50,10 +53,51 @@ namespace Photo_Maximum
                 {
                     order.Masters = _masters;
                 }
+                ApplyFilter("Назначить мастера");
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Ошибка при загрузке данных: " + ex.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+        private void ApplyFilter(string filter)
+        {
+            if (_orders == null) return;
+
+            List<Order> filtered;
+
+            // Фильтруем заказы в зависимости от выбранного фильтра
+            switch (filter)
+            {
+                case "Назначить мастера":
+                    filtered = _orders.Where(o => o.Status == "Новый" || o.Status == "Ожидает назначения мастера").ToList();
+                    break;
+                case "Ждут подтверждения":
+                    filtered = _orders.Where(o => o.Status == "Ждет подтверждения").ToList();
+                    break;
+                case "Подтверждены":
+                    filtered = _orders.Where(o => o.Status == "В процессе" || o.Status == "Завершен").ToList();
+                    break;
+                default:
+                    // По умолчанию показываем все заказы
+                    filtered = _orders.ToList();
+                    break;
+            }
+
+            // Обновляем отфильтрованный список
+            _filteredOrders = new ObservableCollection<Order>(filtered);
+            OrdersList.ItemsSource = _filteredOrders;
+        }
+        // Обработчик изменения выбора в ComboBox
+        private void FilterComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var comboBox = sender as ComboBox;
+            if (comboBox == null) return;
+
+            var selectedFilter = (comboBox.SelectedItem as ComboBoxItem)?.Content.ToString();
+            if (selectedFilter != null)
+            {
+                ApplyFilter(selectedFilter);
             }
         }
 

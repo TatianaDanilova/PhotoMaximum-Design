@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using static Photo_Maximum.MasterPage;
 using System.Windows.Media.Imaging;
+using System.Linq;
 
 namespace Photo_Maximum
 {
@@ -14,12 +15,14 @@ namespace Photo_Maximum
     {
         private readonly DatabaseService _databaseService;
         private List<Photo_Maximum.Order> _orders;
+        private ObservableCollection<Photo_Maximum.Order> _filteredOrders; // Отфильтрованные заказы
 
         public MasterPage()
         {
             InitializeComponent();
             _databaseService = new DatabaseService("Server=95.31.128.97;Database=PhotoMaximum;User Id=admin;Password=winServer=;");
             LoadData();
+
         }
 
         // Загрузка данных
@@ -45,10 +48,48 @@ namespace Photo_Maximum
                         order.PhotoSource = bitmapImage; // Сохраняем BitmapImage в объекте Order
                     }
                 }
+                ApplyFilter("Актуальные");
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Ошибка при загрузке данных: " + ex.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+        private void ApplyFilter(string filter)
+        {
+            if (_orders == null) return;
+
+            List<Photo_Maximum.Order> filtered;
+
+            // Фильтруем заказы в зависимости от выбранного фильтра
+            switch (filter)
+            {
+                case "Актуальные":
+                    filtered = _orders.Where(o => o.Status == "Ждет подтверждения" || o.Status == "Подтвержден" || o.Status == "В процессе").ToList();
+                    break;
+                case "Завершенные":
+                    filtered = _orders.Where(o => o.Status == "Завершен").ToList();
+                    break;
+                default:
+                    // По умолчанию показываем все заказы
+                    filtered = _orders.ToList();
+                    break;
+            }
+
+            // Обновляем отфильтрованный список
+            _filteredOrders = new ObservableCollection<Photo_Maximum.Order>(filtered);
+            OrdersList.ItemsSource = _filteredOrders;
+        }
+        // Обработчик изменения выбора в ComboBox
+        private void FilterComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var comboBox = sender as ComboBox;
+            if (comboBox == null) return;
+
+            var selectedFilter = (comboBox.SelectedItem as ComboBoxItem)?.Content.ToString();
+            if (selectedFilter != null)
+            {
+                ApplyFilter(selectedFilter);
             }
         }
         public ObservableCollection<Order> Orders { get; set; } = new ObservableCollection<Order>();

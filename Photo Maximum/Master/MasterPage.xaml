@@ -44,19 +44,35 @@
     <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <!-- Заголовок и кнопка "Назад" -->
+            <RowDefinition Height="Auto"/>
+            <!-- Фильтр -->
             <RowDefinition Height="*"/>
+            <!-- Список заказов -->
+            <RowDefinition Height="Auto"/>
+            <!-- Кнопка "Обновить список" -->
         </Grid.RowDefinitions>
 
-        <!-- Заголовок -->
         <!-- Заголовок и кнопка "Назад" -->
         <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Stretch">
             <Button Content="Назад" Style="{StaticResource PrimaryButtonStyle}" Click="BackButton_Click" HorizontalAlignment="Left"/>
+            <TextBlock Text="Мои заказы" FontSize="32" FontWeight="Bold" Foreground="#34495E" HorizontalAlignment="Center" Margin="10,0"/>
+        </StackPanel>
 
-            <TextBlock Text="Мои заказы" FontSize="24" FontWeight="Bold" Margin="0,0,0,10"/>
+        <!-- Фильтр -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,10">
+            <TextBlock Text="Фильтр:" FontSize="16" FontWeight="Bold" Foreground="#34495E" VerticalAlignment="Center" Margin="0,0,10,0"/>
+            <ComboBox x:Name="FilterComboBox" 
+       Width="150" 
+       SelectedIndex="0"
+       SelectionChanged="FilterComboBox_SelectionChanged">
+                <ComboBoxItem Content="Актуальные"/>
+                <ComboBoxItem Content="Завершенные"/>
+            </ComboBox>
         </StackPanel>
 
         <!-- Список заказов в виде карточек -->
-        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
             <ItemsControl x:Name="OrdersList" ItemsSource="{Binding Orders}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>

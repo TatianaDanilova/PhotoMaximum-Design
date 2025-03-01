@@ -4,6 +4,7 @@
         Title="Фото Максимум" Width="900" Height="550"
         Background="#BDC3C7" WindowStartupLocation="CenterScreen" >
     <Grid>
+        
         <!-- Frame для навигации между страницами -->
         <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden"/>
     </Grid>

@@ -350,6 +350,7 @@ namespace Photo_Maximum
                 r.comment AS Comment,
                 r.date_start AS StartDate,
                 r.date_end AS EndDate,
+                r.client_id AS ClientId,
                 u_master.fio AS Executor, -- ФИО мастера
                 u_client.fio AS Customer -- ФИО клиента
             FROM Requests r
@@ -373,8 +374,9 @@ namespace Photo_Maximum
                             Comment = reader.IsDBNull(5) ? null : reader.GetString(5),
                             DateStart = reader.IsDBNull(6) ? (DateTime?)null : reader.GetDateTime(6),
                             DateEnd = reader.IsDBNull(7) ? (DateTime?)null : reader.GetDateTime(7),
-                            Executor = reader.IsDBNull(8) ? null : reader.GetString(8),
-                            Customer = reader.GetString(9)
+                            ClientId = reader.GetInt32(8),
+                            Executor = reader.IsDBNull(9) ? null : reader.GetString(9),
+                            Customer = reader.GetString(10)
                         };
                         orders.Add(order);
                     }
@@ -508,7 +510,7 @@ namespace Photo_Maximum
                 var query = @"
             UPDATE Requests 
             SET master_id = NULL, 
-                status = 'ожидает назначения мастера' 
+                status = 'Ожидает назначения мастера' 
             WHERE request_id = @RequestId";
 
                 using (var command = new SqlCommand(query, connection))
