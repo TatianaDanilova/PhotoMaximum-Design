@@ -64,6 +64,7 @@
                             <StackPanel>
                                 <!-- Информация о заказе -->
                                 <TextBlock Text="{Binding Type, StringFormat='Тип: {0}'}" FontSize="16" FontWeight="Bold"/>
+                                <TextBlock Text="{Binding RequestId, StringFormat='Заказ №{0}'}" FontSize="14"/>
                                 <TextBlock Text="{Binding Size, StringFormat='Размер: {0}'}" FontSize="14"/>
                                 <TextBlock Text="{Binding Status, StringFormat='Статус: {0}'}" FontSize="14"/>
                                 <TextBlock Text="{Binding Customer, StringFormat='Клиент: {0}'}" FontSize="14"/>

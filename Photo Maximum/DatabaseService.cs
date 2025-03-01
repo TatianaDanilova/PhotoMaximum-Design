@@ -564,7 +564,7 @@ namespace Photo_Maximum
                 var query = @"
             SELECT n.notification_id, n.request_id, n.message, n.is_read, n.created_at
             FROM Notifications n
-            WHERE n.recipient_id = @UserId
+            WHERE n.recipient_id = @UserId and n.is_read = 0
             ORDER BY n.created_at DESC";
 
                 using (var command = new SqlCommand(query, connection))
@@ -605,6 +605,19 @@ namespace Photo_Maximum
                     command.Parameters.AddWithValue("@MasterId", masterId ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@RecipientId", recipientId);
                     command.Parameters.AddWithValue("@Message", message);
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+        public void MarkNotificationAsRead(int notificationId)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                var query = "UPDATE Notifications SET is_read = 1 WHERE notification_id = @NotificationId";
+                using (var command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@NotificationId", notificationId);
                     command.ExecuteNonQuery();
                 }
             }
@@ -654,8 +667,8 @@ namespace Photo_Maximum
         // Свойства для управления видимостью кнопок
         public Visibility ConfirmButtonVisibility => Status == "Ждет подтверждения" ? Visibility.Visible : Visibility.Collapsed;
         public Visibility RejectButtonVisibility => Status == "Ждет подтверждения" ? Visibility.Visible : Visibility.Collapsed;
-        public Visibility StartButtonVisibility => Status == "подтвержден" ? Visibility.Visible : Visibility.Collapsed;
-        public Visibility CompleteButtonVisibility => Status == "в процессе" ? Visibility.Visible : Visibility.Collapsed;
+        public Visibility StartButtonVisibility => Status == "Подтвержден" ? Visibility.Visible : Visibility.Collapsed;
+        public Visibility CompleteButtonVisibility => Status == "В процессе" ? Visibility.Visible : Visibility.Collapsed;
     }
     
     public class Notification

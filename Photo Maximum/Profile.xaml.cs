@@ -169,10 +169,8 @@ namespace Photo_Maximum
 
         private void ToNtiications_Click(object sender, RoutedEventArgs e)
         {
-            if (CurrentUser.role == "Оператор")
-            {
                 NavigationService.Navigate(new OperatorNotificationsPage());
-            }
+            
         }
     }
 }

@@ -68,15 +68,16 @@ namespace Photo_Maximum
             try
             {
                 // Обновляем статус заказа в базе данных
-                _databaseService.UpdateOrderStatus(order.RequestId, "подтвержден");
+                _databaseService.UpdateOrderStatus(order.RequestId, "Подтвержден");
 
                 // Обновляем статус в объекте Order
-                order.Status = "подтвержден";
+                order.Status = "Подтвержден";
 
                 // Принудительно обновляем интерфейс
                 OrdersList.Items.Refresh();
 
                 MessageBox.Show("Заказ подтвержден.", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                _databaseService.AddNotification(order.RequestId, order.ClientId, $"Мастер {CurrentUser.fio} подтвердил заказ №{order.RequestId}.\n Скоро начнет его выполнение.", CurrentUser.userId);
             }
             catch (Exception ex)
             {
@@ -97,10 +98,11 @@ namespace Photo_Maximum
             try
             {
                 // Уведомляем оператора
-                _databaseService.AddNotification(order.RequestId, 1, $"Мастер {CurrentUser.fio} отказался от заказа.", CurrentUser.userId);
+                _databaseService.AddNotification(order.RequestId, 1, $"Мастер {CurrentUser.fio} отказался от заказа №{order.RequestId}.", CurrentUser.userId);
+                _databaseService.AddNotification(order.RequestId, order.ClientId, $"Мастер {CurrentUser.fio} отказался от заказа №{order.RequestId}.\nОператор скоро назначит нового исполнителя.", CurrentUser.userId);
 
                 // Убираем мастера из заказа
-                _databaseService.UpdateOrderStatus(order.RequestId, "отклонен");
+                _databaseService.UpdateOrderStatus(order.RequestId, "Отклонен");
                 _databaseService.RemoveMasterFromOrder(order.RequestId);
 
                 // Обновляем данные
@@ -126,15 +128,16 @@ namespace Photo_Maximum
             try
             {
                 // Обновляем статус заказа
-                _databaseService.UpdateOrderStatus(order.RequestId, "в процессе");
+                _databaseService.UpdateOrderStatus(order.RequestId, "В процессе");
 
                 // Устанавливаем дату начала выполнения
                 _databaseService.UpdateOrderStartDate(order.RequestId, DateTime.Now);
 
                 // Обновляем статус в объекте Order
-                order.Status = "в процессе";
+                order.Status = "В процессе";
 
                 MessageBox.Show("Заказ начат.", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                _databaseService.AddNotification(order.RequestId, order.ClientId, $"Мастер начал выполнять заказ №{order.RequestId}.", CurrentUser.userId);
             }
             catch (Exception ex)
             {
@@ -155,15 +158,16 @@ namespace Photo_Maximum
             try
             {
                 // Обновляем статус заказа
-                _databaseService.UpdateOrderStatus(order.RequestId, "завершен");
+                _databaseService.UpdateOrderStatus(order.RequestId, "Завершен");
 
                 // Устанавливаем дату завершения
                 _databaseService.UpdateOrderEndDate(order.RequestId, DateTime.Now);
 
                 // Обновляем статус в объекте Order
-                order.Status = "завершен";
+                order.Status = "Завершен";
 
                 MessageBox.Show("Заказ завершен.", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                _databaseService.AddNotification(order.RequestId, order.ClientId, $"Мастер завершил заказ №{order.RequestId}.", CurrentUser.userId);
             }
             catch (Exception ex)
             {
@@ -205,11 +209,11 @@ namespace Photo_Maximum
             // Свойства для управления видимостью кнопок
             public Visibility ConfirmButtonVisibility => Status == "Ждет подтверждения" ? Visibility.Visible : Visibility.Collapsed;
             public Visibility RejectButtonVisibility => Status == "Ждет подтверждения" ? Visibility.Visible : Visibility.Collapsed;
-            public Visibility StartButtonVisibility => Status == "подтвержден" ? Visibility.Visible : Visibility.Collapsed;
-            public Visibility CompleteButtonVisibility => Status == "в процессе" ? Visibility.Visible : Visibility.Collapsed;
+            public Visibility StartButtonVisibility => Status == "Подтвержден" ? Visibility.Visible : Visibility.Collapsed;
+            public Visibility CompleteButtonVisibility => Status == "В процессе" ? Visibility.Visible : Visibility.Collapsed;
 
             // Реализация INotifyPropertyChanged
-            public event PropertyChangedEventHandler PropertyChanged;
+            public event PropertyChangedEventHandler PropertyChanged; 
             protected void OnPropertyChanged(string propertyName)
             {
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

@@ -115,7 +115,7 @@
                     <Label Content="Профиль" FontSize="20" FontWeight="Bold" Foreground="#34495E" Margin="0 5" HorizontalContentAlignment="Center"/>
                     <Button Content="Заказы" Name="ToRequests" Style="{StaticResource SideButtonStyle}" Click="ToRequests_Click" HorizontalContentAlignment="Center"/>
                     <Button Content="Уведомления" Name="ToNotification" Style="{StaticResource SideButtonStyle}" Click="ToNtiications_Click" HorizontalContentAlignment="Center"/>
-                    <Button Content="Мастера" Name="ToMasters" Visibility="Collapsed" Style="{StaticResource SideButtonStyle}" Click="ToMasters_Click" HorizontalContentAlignment="Center"/>
+                    <Button Content="Мастера" x:Name="ToMasters" Visibility="Collapsed" Style="{StaticResource SideButtonStyle}" Click="ToMasters_Click" HorizontalContentAlignment="Center"/>
                 </StackPanel>
 
                 <!-- Нижний блок (выход и завершение) -->

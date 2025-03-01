@@ -100,10 +100,11 @@ namespace Photo_Maximum
             {
                 // Назначаем мастера на заказ
                 _databaseService.AssignMaster(order.RequestId, selectedMaster.UserId);
+                _databaseService.AddNotification(order.RequestId, selectedMaster.UserId, $"Оператор назначил вас на заказ №{order.RequestId}.\nПодтвердите или отклоните его в списке заказов.", CurrentUser.userId);
 
                 // Обновляем список заказов
                 LoadData();
-                MessageBox.Show("Мастер успешно назначен.", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Мастер уведомлен. Дождитесь подтверждения заказа", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
 
             }
             catch (Exception ex)

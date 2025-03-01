@@ -3,26 +3,47 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       Title="Уведомления оператора" Background="#BDC3C7" Width="850" Height="500">
     <Page.Resources>
+        <!-- Стиль для карточек уведомлений -->
+        <Style x:Key="NotificationCardStyle" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#34495E"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="5"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="Margin" Value="0,5"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect BlurRadius="10" ShadowDepth="2" Color="#888"/>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#F0F0F0"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Стиль для кнопок -->
         <Style x:Key="PrimaryButtonStyle" TargetType="Button">
             <Setter Property="Foreground" Value="#34495E"/>
-            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="FontSize" Value="16"/>
             <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="Padding" Value="6 3"/>
+            <Setter Property="Padding" Value="6,3"/>
             <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#34495E"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="HorizontalAlignment" Value="Center"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
-            <Setter Property="Margin" Value="0 10"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Border x:Name="Border"
-                    Background="{TemplateBinding Background}"
-                    CornerRadius="2"
-                    BorderBrush="#34495E"
-                    BorderThickness="1"
-                    Padding="8 4">
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="2"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                Padding="8,4">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
@@ -31,8 +52,8 @@
                                 <Setter Property="Foreground" Value="White"/>
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="Border" Property="Background" Value="#34495E"/>
-                                <Setter Property="BorderBrush" Value="#34495E"/>
+                                <Setter TargetName="Border" Property="Background" Value="#2C3E50"/>
+                                <Setter Property="Foreground" Value="White"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -48,24 +69,47 @@
         </Grid.RowDefinitions>
 
         <!-- Заголовок -->
-        <StackPanel Orientation="Horizontal">
+        <StackPanel Orientation="Horizontal" Grid.Row="0">
             <Button Content="Назад" Style="{StaticResource PrimaryButtonStyle}" Click="BackButton_Click" HorizontalAlignment="Left"/>
-            <TextBlock Text="Уведомления оператора" FontSize="24" FontWeight="Bold" Margin="0,0,0,10"/>
+            <TextBlock Text="Уведомления оператора" FontSize="24" FontWeight="Bold" Margin="10,0,0,10"/>
         </StackPanel>
 
+        <TextBlock x:Name="NoOrdersText" Grid.Row="1"
+   Text="У вас нет новых уведомлений." 
+   FontSize="20" 
+   Foreground="#777" 
+   HorizontalAlignment="Center" 
+   VerticalAlignment="Center" 
+   Margin="0,20" 
+   Visibility="Collapsed"/>
+
         <!-- Список уведомлений -->
-        <DataGrid x:Name="NotificationsGrid" 
-                  Grid.Row="1" 
-                  AutoGenerateColumns="False" 
-                  IsReadOnly="True" 
-                  Margin="0,10">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="ID" Binding="{Binding NotificationId}" Width="Auto"/>
-                <DataGridTextColumn Header="Заказ" Binding="{Binding RequestId}" Width="Auto"/>
-                <DataGridTextColumn Header="Сообщение" Binding="{Binding Message}" Width="*"/>
-                <DataGridTextColumn Header="Дата" Binding="{Binding CreatedAt, StringFormat='dd.MM.yyyy HH:mm'}" Width="Auto"/>
-                <DataGridCheckBoxColumn Header="Прочитано" Binding="{Binding IsRead}" Width="Auto"/>
-            </DataGrid.Columns>
-        </DataGrid>
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <ItemsControl x:Name="NotificationsList">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Style="{StaticResource NotificationCardStyle}">
+                            <StackPanel>
+                                <!-- Заголовок уведомления -->
+                                <TextBlock Text="{Binding Message}" FontSize="16" FontWeight="Bold" Foreground="#34495E"/>
+
+                                <!-- Дополнительная информация -->
+                                <StackPanel Margin="0,5">
+                                    <TextBlock Text="{Binding RequestId, StringFormat='Заказ №{0}'}" FontSize="14" Foreground="#555"/>
+                                    <TextBlock Text="{Binding CreatedAt, StringFormat='Дата: {0:dd.MM.yyyy HH:mm}'}" FontSize="14" Foreground="#555"/>
+                                </StackPanel>
+
+                                <!-- Кнопка "Скрыть" -->
+                                <Button Content="Скрыть" 
+                                        Style="{StaticResource PrimaryButtonStyle}" 
+                                        Margin="0,10,0,0" 
+                                        HorizontalAlignment="Right"
+                                        Click="HideNotification_Click"/>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
     </Grid>
 </Page>
