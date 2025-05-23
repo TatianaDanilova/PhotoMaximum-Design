@@ -11,9 +11,9 @@ namespace Photo_Maximum
 
         public Profile()
         {
-            string connectionString = "Server=95.31.128.97;Database=PhotoMaximum;User Id=admin;Password=winServer=;";
+            string connectionString = "Server=95.31.128.97;Database=PhotoMaximum;User Id=admin;Password=winServer===;";
             InitializeComponent();
-            _databaseService = new DatabaseService("Server=95.31.128.97;Database=PhotoMaximum;User Id=admin;Password=winServer=;");
+            _databaseService = new DatabaseService("Server=95.31.128.97;Database=PhotoMaximum;User Id=admin;Password=winServer===;");
             LoadUserData();
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -63,13 +63,17 @@ namespace Photo_Maximum
                 RoleBlock.Visibility = Visibility.Collapsed;
                 RoleBox.Visibility = Visibility.Collapsed;
             }
-            if (CurrentUser.role == "Оператор")
+            if (CurrentUser.role == "Менеджер")
             {
                 ToMasters.Visibility = Visibility.Visible;
             }
+            if (CurrentUser.role == "Мастер")
+            {
+                ToReviews.Visibility = Visibility.Visible;
+            }
 
-        
-    }
+
+        }
 
         private void LoadUserData()
         {
@@ -96,7 +100,7 @@ namespace Photo_Maximum
                 }
 
                 // Показываем кнопку для оператора
-                if (userData.Role == "Оператор")
+                if (userData.Role == "Менеджер")
                 {
                     ToMasters.Visibility = Visibility.Visible;
                 }
@@ -113,7 +117,7 @@ namespace Photo_Maximum
             {
                 NavigationService.Navigate(new Client());
             }
-            else if (CurrentUser.role == "Оператор")
+            else if (CurrentUser.role == "Менеджер")
             {
                 NavigationService.Navigate(new Operator());
             }
@@ -128,7 +132,7 @@ namespace Photo_Maximum
         }
         private void ToMasters_Click(object sender, RoutedEventArgs e)
         {
-            if (CurrentUser.role == "Оператор")
+            if (CurrentUser.role == "Менеджер")
             {
                 NavigationService.Navigate(new MastersPage());
             }
@@ -137,9 +141,14 @@ namespace Photo_Maximum
                 MessageBox.Show("Доступ запрещен. Эта страница недоступна.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
-        
+        private void ToReviews_Click(object sender, RoutedEventArgs e)
+        {
+            NavigationService.Navigate(new MasterReviews(CurrentUser.userId));
+        }
+            
 
-        private void EditProfileClick(object sender, RoutedEventArgs e)
+
+            private void EditProfileClick(object sender, RoutedEventArgs e)
         {
             // Проверяем, что CurrentUser не пустой
             if (string.IsNullOrEmpty(CurrentUser.fio) || string.IsNullOrEmpty(CurrentUser.phone) ||

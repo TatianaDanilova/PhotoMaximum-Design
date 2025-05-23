@@ -18,7 +18,7 @@ namespace Photo_Maximum
         public MastersPage()
         {
             InitializeComponent();
-            _databaseService = new DatabaseService("Server=95.31.128.97;Database=PhotoMaximum;User Id=admin;Password=winServer=;");
+            _databaseService = new DatabaseService("Server=95.31.128.97;Database=PhotoMaximum;User Id=admin;Password=winServer===;");
             LoadMasters(); // Загружаем данные при инициализации страницы
         }
 

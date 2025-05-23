@@ -23,14 +23,14 @@ namespace Photo_Maximum
             InitializeComponent();
 
             // Проверяем роль пользователя
-            if (CurrentUser.role != "Оператор")
+            if (CurrentUser.role != "Менеджер")
             {
-                MessageBox.Show("Доступ запрещен. Эта страница доступна только для операторов.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Доступ запрещен. Эта страница доступна только для менеджеров.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                 NavigationService.Navigate(new Profile()); // Перенаправляем на профиль
                 return;
             }
 
-            _databaseService = new DatabaseService("Server=95.31.128.97;Database=PhotoMaximum;User Id=admin;Password=winServer=;");
+            _databaseService = new DatabaseService("Server=95.31.128.97;Database=PhotoMaximum;User Id=admin;Password=winServer===;");
 
             // Загружаем данные при создании страницы
             LoadData();
@@ -144,7 +144,7 @@ namespace Photo_Maximum
             {
                 // Назначаем мастера на заказ
                 _databaseService.AssignMaster(order.RequestId, selectedMaster.UserId);
-                _databaseService.AddNotification(order.RequestId, selectedMaster.UserId, $"Оператор назначил вас на заказ №{order.RequestId}.\nПодтвердите или отклоните его в списке заказов.", CurrentUser.userId);
+                _databaseService.AddNotification(order.RequestId, selectedMaster.UserId, $"Менеджер назначил вас на заказ №{order.RequestId}.\nПодтвердите или отклоните его в списке заказов.", CurrentUser.userId);
 
                 // Обновляем список заказов
                 LoadData();

@@ -102,12 +102,18 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Client\ReviewWindow.xaml.cs">
+      <DependentUpon>ReviewWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Database\DatabaseService.cs" />
     <Compile Include="Everybody\EditProfile.xaml.cs">
       <DependentUpon>EditProfile.xaml</DependentUpon>
     </Compile>
     <Compile Include="Master\MasterPage.xaml.cs">
       <DependentUpon>MasterPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Master\MasterReviews.xaml.cs">
+      <DependentUpon>MasterReviews.xaml</DependentUpon>
     </Compile>
     <Compile Include="Operator\MastersPages.xaml.cs">
       <DependentUpon>MastersPages.xaml</DependentUpon>
@@ -130,6 +136,10 @@
     <Compile Include="Everybody\RegPage.xaml.cs">
       <DependentUpon>RegPage.xaml</DependentUpon>
     </Compile>
+    <Page Include="Client\ReviewWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Everybody\AuthPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -163,6 +173,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Master\MasterPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Master\MasterReviews.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

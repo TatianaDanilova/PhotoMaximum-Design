@@ -204,7 +204,7 @@ namespace Photo_Maximum
                 File.Copy(_photoPath, savePath, true);
 
                 // Сохраняем заказ в базу данных
-                var databaseService = new DatabaseService("Server=95.31.128.97;Database=PhotoMaximum;User Id=admin;Password=winServer=;");
+                var databaseService = new DatabaseService("Server=95.31.128.97;Database=PhotoMaximum;User Id=admin;Password=winServer===;");
                 databaseService.CreateRequest(CurrentUser.userId, _selectedItemType, _selectedItemSize, savePath, CommentTextBox.Text, _itemPrices[_selectedItemType][_selectedItemSize]);
 
                 MessageBox.Show("Заказ успешно создан!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);

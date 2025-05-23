@@ -1,7 +1,8 @@
 ﻿<Page x:Class="Photo_Maximum.MasterPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      Title="Страница мастера" Background="#BDC3C7" Width="850" Height="500" >
+      Title="Страница мастера" Background="#BDC3C7" 
+      >
     <Page.Resources>
         <Style x:Key="PrimaryButtonStyle" TargetType="Button">
             <Setter Property="Foreground" Value="#34495E"/>
@@ -73,6 +74,18 @@
 
         <!-- Список заказов в виде карточек -->
         <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                
+            
+            <!-- Сообщение, если заказов нет -->
+            <TextBlock x:Name="NoOrdersText" 
+                               Text="У вас пока нет заказов." 
+                               FontSize="20" 
+                               Foreground="#777" 
+                               HorizontalAlignment="Center" 
+                               VerticalAlignment="Center" 
+                               Margin="0,20" 
+                               Visibility="Collapsed"/>
             <ItemsControl x:Name="OrdersList" ItemsSource="{Binding Orders}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
@@ -119,6 +132,7 @@
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
+            </StackPanel>
         </ScrollViewer>
     </Grid>
 </Page>

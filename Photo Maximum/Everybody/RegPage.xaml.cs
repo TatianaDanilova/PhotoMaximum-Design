@@ -18,7 +18,7 @@ namespace Photo_Maximum
         public RegPage()
         {
             InitializeComponent();
-            _databaseService = new DatabaseService("Server=95.31.128.97;Database=PhotoMaximum;User Id=admin;Password=winServer=;");
+            _databaseService = new DatabaseService("Server=95.31.128.97;Database=PhotoMaximum;User Id=admin;Password=winServer===;");
         }
 
         private void NameBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -117,7 +117,13 @@ namespace Photo_Maximum
         }
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
-            Application.Current.Shutdown();
+            string caption = "";
+            MessageBoxButton buttons = MessageBoxButton.YesNo;
+            MessageBoxResult result = MessageBox.Show("Вы уверены в том, что хотите закрыть приложение?", caption, buttons, MessageBoxImage.Question);
+            if (result == MessageBoxResult.Yes)
+            {
+                Application.Current.Shutdown();
+            }
         }
     }
 }

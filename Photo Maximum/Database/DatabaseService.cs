@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data.SqlClient;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace Photo_Maximum
@@ -222,27 +224,25 @@ namespace Photo_Maximum
             return requests;
         }
         // Метод для создания заказа
-        public void CreateRequest(int clientId, string itemType, string itemSize, string photoPath, string comment, int price)
+        public void CreateRequest(int clientId, string itemType, 
+            string itemSize, string photoPath, string comment, int price)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
 
-                // Получаем type_id по названию типа предмета
                 int typeId = GetTypeIdByName(itemType, connection);
 
                 if (typeId == -1)
                 {
                     throw new Exception("Тип предмета не найден в базе данных.");
                 }
-
-                // Находим максимальный request_id
                 int newRequestId = GetMaxRequestId(connection) + 1;
-
-                // SQL-запрос для добавления заказа
+                
                 var query = @"
-            INSERT INTO Requests (request_id, type_id, client_id, size, photo, price, comment, status)
-            VALUES (@RequestId, @TypeId, @ClientId, @Size, @Photo, @Price, @Comment, 'Новый')";
+            INSERT INTO Requests (request_id, type_id, client_id, size, 
+            photo, price, comment, status) VALUES (@RequestId, @TypeId, @ClientId, @Size, 
+            @Photo, @Price, @Comment, 'Новый')";
 
                 using (var command = new SqlCommand(query, connection))
                 {
@@ -252,10 +252,50 @@ namespace Photo_Maximum
                     command.Parameters.AddWithValue("@Size", itemSize);
                     command.Parameters.AddWithValue("@Photo", photoPath);
                     command.Parameters.AddWithValue("@Price", price);
-                    command.Parameters.AddWithValue("@Comment", comment ?? (object)DBNull.Value); // Если комментарий null, записываем DBNull
+                    command.Parameters.AddWithValue("@Comment", comment ?? (object)DBNull.Value);
                     command.ExecuteNonQuery();
                 }
             }
+        }
+
+        public bool AddReview(int clientId, int itemId, int rating, string reviewText)
+        {
+            string query = @"
+                INSERT INTO Reviews (client_id, request_id, rating, review_text)
+                VALUES (@clientId, @request_id, @rating, @reviewText)";
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@clientId", clientId);
+                    command.Parameters.AddWithValue("@request_id", itemId);
+                    command.Parameters.AddWithValue("@rating", rating);
+                    command.Parameters.AddWithValue("@reviewText", reviewText);
+
+                    return command.ExecuteNonQuery() > 0; 
+                }
+            }
+        }
+
+        public bool HasAlreadyReviewed(int clientId, int itemId)
+        {
+            bool exists = false;
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                string query = "SELECT COUNT(1) FROM Reviews WHERE client_id = @clientId AND request_id = @itemId";
+                using (var command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@clientId", clientId);
+                    command.Parameters.AddWithValue("@itemId", itemId);
+                    exists = Convert.ToInt32(command.ExecuteScalar()) > 0;
+                }
+            }
+
+            return exists;
         }
 
         // Метод для поиска максимального request_id
@@ -625,7 +665,32 @@ namespace Photo_Maximum
             }
         }
     }
-    // Класс для хранения данных пользователя
+
+    public class ReviewModel
+    {
+        public string CustomerName { get; set; }
+        public string ReviewText { get; set; }
+        public DateTime ReviewDate { get; set; }
+    }
+    public class MasterReviewsViewModel : INotifyPropertyChanged
+    {
+        private ObservableCollection<ReviewModel> _reviews;
+        public ObservableCollection<ReviewModel> Reviews
+        {
+            get => _reviews;
+            set
+            {
+                _reviews = value;
+                OnPropertyChanged(nameof(Reviews));
+            }
+        }
+
+        
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged(string propertyName) =>
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
     public class UserData
     {
         public int UserId { get; set; }
@@ -635,6 +700,13 @@ namespace Photo_Maximum
         public string Password { get; set; }
         public string Role { get; set; }
    
+    }
+    public class ReviewViewModel
+    {
+        public string CustomerName { get; set; }
+        public string ReviewText { get; set; }
+        public DateTime ReviewDate { get; set; }
+        public int rating { get; set; }
     }
     public class ClientRequest
     {

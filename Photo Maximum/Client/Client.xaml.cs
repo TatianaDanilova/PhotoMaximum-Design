@@ -27,7 +27,7 @@ namespace Photo_Maximum
                 return;
             }
 
-            _databaseService = new DatabaseService("Server=95.31.128.97;Database=PhotoMaximum;User Id=admin;Password=winServer=;");
+            _databaseService = new DatabaseService("Server=95.31.128.97;Database=PhotoMaximum;User Id=admin;Password=winServer===;");
 
             // Загружаем данные при создании страницы
             LoadClientRequests();
@@ -125,9 +125,28 @@ namespace Photo_Maximum
         {
             NavigationService.Navigate(new Profile());
         }
-    
+        private void LeaveReview_Click(object sender, RoutedEventArgs e)
+        {
+            Button btn = sender as Button;
+            if (btn == null || btn.Tag == null) return;
 
-    private void ToProfile_Click(object sender, RoutedEventArgs e)
+            int requestId = (int)btn.Tag;
+            CurrentRequest.requestId = requestId;
+            ReviewWindow reviewWindow = new ReviewWindow(requestId);
+            var clientId = CurrentUser.userId; // Используем ID текущего пользователя
+
+            // Проверяем, оставлял ли уже клиент отзыв на это блюдо
+            bool alreadyReviewed = _databaseService.HasAlreadyReviewed(clientId, CurrentRequest.requestId);
+
+            if (alreadyReviewed)
+            {
+                MessageBox.Show("Вы уже оставили отзыв на это блюдо.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;  // Прерываем выполнение, если отзыв уже существует
+            }
+            reviewWindow.ShowDialog();
+        }
+
+        private void ToProfile_Click(object sender, RoutedEventArgs e)
         {
             NavigationService.Navigate(new Profile());
         }

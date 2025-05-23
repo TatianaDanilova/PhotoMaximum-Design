@@ -20,7 +20,7 @@ namespace Photo_Maximum
         public MasterPage()
         {
             InitializeComponent();
-            _databaseService = new DatabaseService("Server=95.31.128.97;Database=PhotoMaximum;User Id=admin;Password=winServer=;");
+            _databaseService = new DatabaseService("Server=95.31.128.97;Database=PhotoMaximum;User Id=admin;Password=winServer===;");
             LoadData();
 
         }
@@ -49,6 +49,15 @@ namespace Photo_Maximum
                     }
                 }
                 ApplyFilter("Актуальные");
+                // Проверяем, есть ли заказы
+                if (_orders == null || _orders.Count == 0)
+                {
+                    NoOrdersText.Visibility = Visibility.Visible; // Показываем сообщение
+                }
+                else
+                {
+                    NoOrdersText.Visibility = Visibility.Collapsed; // Скрываем сообщение
+                }
             }
             catch (Exception ex)
             {
@@ -84,7 +93,10 @@ namespace Photo_Maximum
         private void FilterComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var comboBox = sender as ComboBox;
-            if (comboBox == null) return;
+            if (comboBox == null) 
+            {
+                NoOrdersText.Visibility = Visibility.Visible; // Показываем сообщение
+            } 
 
             var selectedFilter = (comboBox.SelectedItem as ComboBoxItem)?.Content.ToString();
             if (selectedFilter != null)
@@ -140,7 +152,7 @@ namespace Photo_Maximum
             {
                 // Уведомляем оператора
                 _databaseService.AddNotification(order.RequestId, 1, $"Мастер {CurrentUser.fio} отказался от заказа №{order.RequestId}.", CurrentUser.userId);
-                _databaseService.AddNotification(order.RequestId, order.ClientId, $"Мастер {CurrentUser.fio} отказался от заказа №{order.RequestId}.\nОператор скоро назначит нового исполнителя.", CurrentUser.userId);
+                _databaseService.AddNotification(order.RequestId, order.ClientId, $"Мастер {CurrentUser.fio} отказался от заказа №{order.RequestId}.\nМенеджер скоро назначит нового исполнителя.", CurrentUser.userId);
 
                 // Убираем мастера из заказа
                 _databaseService.UpdateOrderStatus(order.RequestId, "Отклонен");
@@ -148,7 +160,7 @@ namespace Photo_Maximum
 
                 // Обновляем данные
                 LoadData();
-                MessageBox.Show("Заказ отклонен. Оператор уведомлен.", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Заказ отклонен. Менеджер уведомлен.", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {

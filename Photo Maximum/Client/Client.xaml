@@ -1,7 +1,7 @@
 ﻿<Page x:Class="Photo_Maximum.Client"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      Title="Оператор" Width="850" Height="500" Background="#BDC3C7">
+      Title="Менеджер" Width="850" Height="500" Background="#BDC3C7">
     <Page.Resources>
         <!-- Стиль для карточек -->
         <Style x:Key="OrderCardStyle" TargetType="Border">
@@ -67,6 +67,16 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        <Style x:Key="RewStyle" TargetType="Button">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Status}" Value="Завершен">
+                    <Setter Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Status}" Value="В процессе">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
         <!-- Шаблон для карточки заказа -->
         <DataTemplate x:Key="OrderCardTemplate">
             <Border Style="{StaticResource OrderCardStyle}">
@@ -102,6 +112,11 @@
 
                             <!-- Заказчик -->
                             <TextBlock Text="{Binding Customer, StringFormat='Заказчик: {0}'}" FontSize="14" Foreground="#555"/>
+
+                            <Button Content="Оставить отзыв"
+                                Style="{StaticResource RewStyle}"
+                                Click="LeaveReview_Click"
+                                Tag="{Binding RequestId}"/> 
                         </StackPanel>
                     </Expander>
                 </StackPanel>

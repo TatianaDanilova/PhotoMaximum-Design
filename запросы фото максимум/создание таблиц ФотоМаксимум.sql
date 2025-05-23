@@ -33,9 +33,21 @@ CREATE TABLE Notifications (
     master_id INT NULL,                       -- ID мастера (если применимо)
     recipient_id INT NOT NULL,                    -- ID получател€ уведомлени€
     message NVARCHAR(500) NOT NULL,               -- “екст уведомлени€
-    is_read BIT NOT NULL DEFAULT 0,               -- ‘лаг прочтени€ (0 - не прочитано, 1 - прочитано)
+    is_read BIT NOT NULL DEFAULT 0,             
     created_at DATETIME NOT NULL DEFAULT GETDATE(), -- ƒата создани€ уведомлени€
     FOREIGN KEY (request_id) REFERENCES Requests(request_id),
     FOREIGN KEY (master_id) REFERENCES Users(user_id),
     FOREIGN KEY (recipient_id) REFERENCES Users(user_id)
 );
+
+CREATE TABLE Reviews (
+    review_id INT PRIMARY KEY IDENTITY,
+    client_id INT NOT NULL,
+    request_id INT NOT NULL,
+    rating INT CHECK (rating BETWEEN 1 AND 5),
+    review_text NVARCHAR(500),
+    review_date DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (client_id) REFERENCES Users(user_id),
+    FOREIGN KEY (request_id) REFERENCES Requests(request_id)
+);
+
